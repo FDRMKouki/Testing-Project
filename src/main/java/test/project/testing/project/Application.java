@@ -15,6 +15,7 @@ public class Application {
 
   @GetMapping("/imsleepy")
   public String hello() {
+    //StringUtils. 使えました
     return "Wake up";
   }
 }
