@@ -1,4 +1,4 @@
-package test.project.testing.project;
+package resson.project.testing.project;
 
 public class Student {
 
