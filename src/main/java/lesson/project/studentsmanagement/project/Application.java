@@ -1,4 +1,4 @@
-package resson.project.testing.project;
+package lesson.project.studentsmanagement.project;
 
 import java.util.List;
 import java.util.stream.Collectors;

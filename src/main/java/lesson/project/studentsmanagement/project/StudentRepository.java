@@ -1,4 +1,4 @@
-package resson.project.testing.project;
+package lesson.project.studentsmanagement.project;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;

@@ -1,4 +1,4 @@
-package resson.project.testing.project;
+package lesson.project.studentsmanagement.project;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
