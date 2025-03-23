@@ -1,0 +1,28 @@
+students_managementのテーブル
+#--------
+students
+#--------
+id:varchar36 primary key
+name:varchar50 not null
+furigana:varchar50 not null
+nickname:varchar20
+mail_address:varchar30 not null
+region:varchar20
+age:int
+gender:varchar10
+
+create table students(id varchar(36),name varchar(50),furigana varchar(50),
+nickname varchar(20),mail_address varchar(30),region varchar(20),
+age int,gender varchar(10)) default charset='utf8';
+
+#----------------
+students_courses
+#----------------
+id:varchar36 primary key
+student_id:varchar36 not null
+course_name:varchar50 not null
+start_datetime_at:timestamp
+predicted_complete_datetime_at:timestamp
+
+create table students_courses(id varchar(36),student_id varchar(36),
+course_name varchar(50),start_datetime_at datetime,predicted_complete_datetime_at datetime) default charset='utf8';
