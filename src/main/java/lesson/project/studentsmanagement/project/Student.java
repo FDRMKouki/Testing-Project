@@ -1,23 +1,19 @@
 package lesson.project.studentsmanagement.project;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Student {
 
+  private String id;
   private String name;
+  private String furigana;
+  private String nickname;
+  private String mailAddress;
+  private String region;
   private int age;
+  private String gender;
 
-  public String getName() {
-    return name;
-  }
-
-  public int getAge() {
-    return age;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setAge(int age) {
-    this.age = age;
-  }
 }

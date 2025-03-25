@@ -26,3 +26,55 @@ predicted_complete_datetime_at:timestamp
 
 create table students_courses(id varchar(36),student_id varchar(36),
 course_name varchar(50),start_datetime_at datetime,predicted_complete_datetime_at datetime) default charset='utf8';
+
+EXAMPLE COMMANDS
+UUIDの生成: https://www.uuidgenerator.net/
+curl -X POST -d "id=da4bfc51-55b7-45ee-a5a0-32ff8ddea2f0&name=Kozki&furigana=Kozki&nickname=MRDF&mail_address=1&region=nowhere&age=18&gender=male" "http://localhost:8080/students"
+INSERT students values('da4bfc51-55b7-45ee-a5a0-32ff8ddea2f0','Kozki','Kozuki','MRDF','1','nowhere',18,'male');
+
+curl -X POST -d "id=685e0445-c4f1-452e-8b6e-e5cc1e58afaf&name=Fdchn&furigana=Fdchan&nickname=FDRM&mail_address=2&region=here&age=20&gender=female" "http://localhost:8080/students"
+INSERT students values('685e0445-c4f1-452e-8b6e-e5cc1e58afaf','Fdchn','Fdchan','FDRM','2','here',20,'female');
+
+curl -X POST -d "id=3a739ee1-239e-4a9a-b361-c53796e8b413&name=Chrn&furigana=Chrno&nickname=Cr&mail_address=3&region=where&age=23&gender=female" "http://localhost:8080/students"
+INSERT students values('3a739ee1-239e-4a9a-b361-c53796e8b413','Chrn','Chrno','Cr','3','where',23,'female');
+
+curl -X POST -d "id=5bf012bb-75b0-4679-bd52-fa510248c2ef&name=Mcri&furigana=Mecuri&nickname=Hg&mail_address=4&region=everywhere&age=30&gender=female" "http://localhost:8080/students"
+INSERT students values('5bf012bb-75b0-4679-bd52-fa510248c2ef','Mrci','Mecuri','Hg','4','everywhere',30,'female');
+
+curl -X POST -d "id=80f286fc-db40-4fb8-a11e-4a7a7031ffb2 &name=Neodm&furigana=Neodym&nickname=Nd&mail_address=5&region=elsewhere&age=29&gender=female" "http://localhost:8080/students"
+INSERT students values('80f286fc-db40-4fb8-a11e-4a7a7031ffb2 ','Neodm','Neodym','Nd','5','elsewhere',29,'female');
+
+
+
+curl -X POST -d "id=s1&student_id=da4bfc51-55b7-45ee-a5a0-32ff8ddea2f0&course_name=Java&start_datetime_at=2100-01-01&predicted_complete_datetime_at=2100-12-31" "http://localhost:8080/students_courses"
+INSERT students_courses values('s1','da4bfc51-55b7-45ee-a5a0-32ff8ddea2f0','Java','2100-01-01','2100-12-31');
+
+curl -X POST -d "id=s2&student_id=685e0445-c4f1-452e-8b6e-e5cc1e58afaf&course_name=Art&start_datetime_at=2100-01-02&predicted_complete_datetime_at=2100-12-30" "http://localhost:8080/students_courses"
+INSERT students_courses values('s2','685e0445-c4f1-452e-8b6e-e5cc1e58afaf','Art','2100-01-02','2100-12-30');
+
+curl -X POST -d "id=s3&student_id=3a739ee1-239e-4a9a-b361-c53796e8b413&course_name=Java&start_datetime_at=2100-01-03&predicted_complete_datetime_at=2100-12-29" "http://localhost:8080/students_courses"
+INSERT students_courses values('s3','3a739ee1-239e-4a9a-b361-c53796e8b413','Java','2100-01-03','2100-12-29');
+
+curl -X POST -d "id=s4&student_id=5bf012bb-75b0-4679-bd52-fa510248c2e&course_name=Java&start_datetime_at=2100-01-04&predicted_complete_datetime_at=2100-12-28" "http://localhost:8080/students_courses"
+INSERT students_courses values('s4','5bf012bb-75b0-4679-bd52-fa510248c2e','Java','2100-01-04','2100-12-28');
+
+curl -X POST -d "id=s5&student_id=80f286fc-db40-4fb8-a11e-4a7a7031ffb2&course_name=Art&start_datetime_at=2100-01-05&predicted_complete_datetime_at=2100-12-27" "http://localhost:8080/students_courses"
+INSERT students_courses values('s5','80f286fc-db40-4fb8-a11e-4a7a7031ffb2','Art','2100-01-05','2100-12-27');
+
+
+
+
+
+
+
+こじんめも
+Unsupported class file major version 65
+
+A problem occurred configuring root project 'First Mod'.
+> Could not open cp_proj generic class cache for build file 'C:\Users\OWNER\OneDrive\MinecraftMod\First Mod\build.gradle' (C:\Users\OWNER\.gradle\caches\8.1.1\scripts\78a58cdguav6by0g67t6stfou).
+ >BUG! exception in phase 'semantic analysis' in source unit '_BuildScript_' Unsupported class file major version 65
+
+21 Oracle OpenJDK version 21.0.6
+
+シェルスクリプトを導入する
+https://www.daily-trial.com/java/
