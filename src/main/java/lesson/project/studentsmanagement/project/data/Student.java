@@ -1,4 +1,4 @@
-package lesson.project.studentsmanagement.project;
+package lesson.project.studentsmanagement.project.data;
 
 import lombok.Getter;
 import lombok.Setter;

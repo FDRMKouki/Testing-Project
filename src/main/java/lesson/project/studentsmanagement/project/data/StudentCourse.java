@@ -1,4 +1,4 @@
-package lesson.project.studentsmanagement.project;
+package lesson.project.studentsmanagement.project.data;
 
 import java.time.LocalDate;
 import lombok.Getter;

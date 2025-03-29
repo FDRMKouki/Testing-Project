@@ -1,6 +1,9 @@
 package lesson.project.studentsmanagement.project;
 
 import java.util.List;
+import lesson.project.studentsmanagement.project.data.Student;
+import lesson.project.studentsmanagement.project.data.StudentCourse;
+import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,17 +32,4 @@ public class Application {
   public List<StudentCourse> getStudentCourseList() {
     return repository.searchStudentCourse();
   }
-
-  //curl "http://localhost:8080/studentAll"映像にはないので念のため
-//  @GetMapping("/studentAll")
-//  public String getAllStudent() {
-//    List<Student> students = repository.searchAll();
-//    if (students.isEmpty()) {
-//      return "生徒が一人も見つかりませんでした";
-//    }
-//
-//    return students.stream()
-//        .map(student -> student.getName() + " " + student.getAge() + "歳")
-//        .collect(Collectors.joining(", "));
-//  }
 }
