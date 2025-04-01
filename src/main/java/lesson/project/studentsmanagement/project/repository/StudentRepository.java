@@ -2,7 +2,7 @@ package lesson.project.studentsmanagement.project.repository;
 
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
-import lesson.project.studentsmanagement.project.data.StudentCourse;
+import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -22,6 +22,6 @@ public interface StudentRepository {
   List<Student> searchStudent();
 
   @Select("SELECT * FROM students_courses")
-  List<StudentCourse> searchStudentCourse();
+  List<StudentsCourses> searchStudentCourse();
 
 }
