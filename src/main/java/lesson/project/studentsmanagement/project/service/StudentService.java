@@ -1,9 +1,8 @@
 package lesson.project.studentsmanagement.project.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.data.Student;
-import lesson.project.studentsmanagement.project.data.StudentCourse;
+import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,11 @@ public class StudentService {
 
   public List<Student> searchStudentList() {
     repository.searchStudent();
-    return repository.searchStudent().stream()
-        .filter(student -> student.getAge() >= 30 && student.getAge() < 40)
-        .collect(Collectors.toList());
+    return repository.searchStudent();
   }
 
-  public List<StudentCourse> searchStudentCourseList() {
-    return repository.searchStudentCourse().stream()
-        //"名前".equals()の形だとNullPointerExceptionを防げるらしい
-        .filter(studentCourse -> "Java".equals(studentCourse.getCourseName()))
-        .collect(Collectors.toList());
+  public List<StudentsCourses> searchStudentsCourseList() {
+    return repository.searchStudentCourse();
   }
 
 }
