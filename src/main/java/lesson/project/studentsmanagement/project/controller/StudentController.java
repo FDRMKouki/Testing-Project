@@ -4,13 +4,13 @@ import java.util.List;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
-import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class StudentController {
 
   private StudentService service;
@@ -24,15 +24,14 @@ public class StudentController {
 
   //Read 生徒情報を取得する curl "http://localhost:8080/studentList"
   @GetMapping("/studentList")
-  public List<StudentDetail> getStudentList() {
+  public String getStudentList(Model model) {
     List<Student> students = service.searchStudentList();
     List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
 
-    //コンバーター 全生徒追加完了後完成した詳細リストを返す
-    return converter.convertStudentDetails(students, studentsCourses);
-
+    //コンバーター 全生徒追加完了後完成した詳細リストをhtmlのattributeに返す
+    model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
+    return "studentList";
   }
-
 
   //Read 生徒コース情報を取得するcurl "http://localhost:8080/studentCourseList"
   @GetMapping("/studentCourseList")
