@@ -35,6 +35,7 @@ public class StudentService {
     repository.registerStudent(student);
 
     //TODO:第28回の映像をよく見て、受講生コース情報も登録できるようにする。
+    
   }
 
 }
