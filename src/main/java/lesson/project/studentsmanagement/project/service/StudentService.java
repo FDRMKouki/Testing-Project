@@ -17,13 +17,34 @@ public class StudentService {
     this.repository = repository;
   }
 
+  //生徒リスト取得リポ呼び出し
   public List<Student> searchStudentList() {
     repository.searchStudent();
     return repository.searchStudent();
   }
 
+  //生徒コースリスト取得リポ呼び出し
   public List<StudentsCourses> searchStudentsCourseList() {
     return repository.searchStudentCourse();
   }
+
+  //生徒登録リポ呼び出し
+  public void registerStudent(Student student) {
+    repository.registerStudent(student);
+  }
+
+//  // 仮のコース情報をDBに登録するメソッド
+//  public void insertDefaultCourseForStudent(String studentId) {
+//    // 仮のコース情報を作成
+//    StudentsCourses studentsCourses = new StudentsCourses();
+//    studentsCourses.setStudentId(studentId);
+//    studentsCourses.setCourseName("仮コース");
+//    studentsCourses.setStartDatetimeAt(LocalDate.now());  // 現在の日付を開始日として設定
+//    studentsCourses.setPredictedCompleteDatetimeAt(
+//        LocalDate.now().plusMonths(1));  // 1ヶ月後を予測完了日として設定
+//
+//    // コース情報をDBに登録
+//    repository.insertCourse(studentsCourses);
+//  }
 
 }
