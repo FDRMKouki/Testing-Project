@@ -69,6 +69,9 @@ public class StudentController {
     //仮のコース情報登録サービス呼び出し
 
     //確認用ログ
+    System.out.println("登録された生徒の全体情報");
+    System.out.println(studentDetail);
+    System.out.println("登録された生徒の個人の情報");
     System.out.println("登録された生徒のId:" + studentDetail.getStudent().getId() + " 名前:"
         + studentDetail.getStudent().getName() + " フリガナ:" + studentDetail.getStudent()
         .getFurigana() + " ニックネーム:" + studentDetail.getStudent().getNickname() + " メールアドレス:"

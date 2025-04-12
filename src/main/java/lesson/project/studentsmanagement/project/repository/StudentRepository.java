@@ -26,6 +26,8 @@ public interface StudentRepository {
   List<StudentsCourses> searchStudentCourse();
 
   //引数で受け取り、戻り値はvoidにする
+  //students(id, name, ...) VALUES (...
+  //         ↑かっこを省略すると全項目指定
   @Insert(
       "INSERT INTO students (id, name, furigana, nickname, mail_address, region, age, gender, remark, is_deleted) "
           +
