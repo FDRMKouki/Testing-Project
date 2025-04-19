@@ -1,5 +1,6 @@
 package lesson.project.studentsmanagement.project.data;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class Student {
 
-  private String id;
+  private Long id; // ← String → Long に変更
   private String name;
   private String furigana;
   private String nickname;
@@ -17,5 +18,6 @@ public class Student {
   private String gender;
   private String remark;
   private boolean isDeleted;
+  private List<StudentsCourses> studentsCourses;
 
 }

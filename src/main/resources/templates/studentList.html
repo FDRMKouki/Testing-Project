@@ -23,15 +23,18 @@
   <tbody>
   <tr th:each="studentDetail : ${studentList}">
     <!--枠ー-->
-    <td th:text="${studentDetail.student.id}">1212121</td>
-    <td th:text="${studentDetail.student.name}">しらないひと</td>
-    <td th:text="${studentDetail.student.furigana}">シラナイヒト</td>
-    <td th:text="${studentDetail.student.nickname}">しらにん</td>
-    <td th:text="${studentDetail.student.mailAddress}">shiran</td>
-    <td th:text="${studentDetail.student.region}">dokka</td>
-    <td th:text="${studentDetail.student.age}">1435246356</td>
-    <td th:text="${studentDetail.student.gender}">mafemale</td>
-    <td th:text="${studentDetail.student.remark}">知らんがな</td>
+    <td th:text="${studentDetail.student.id}">Id</td>
+    <td>
+      <a th:href="@{/studentDetail/{id}(id=${studentDetail.student.id})}"
+         th:text="${studentDetail.student.name}">名前</a>
+    </td>
+    <td th:text="${studentDetail.student.furigana}">フリガナ</td>
+    <td th:text="${studentDetail.student.nickname}">ニックネーム</td>
+    <td th:text="${studentDetail.student.mailAddress}">メールアドレス</td>
+    <td th:text="${studentDetail.student.region}">地域</td>
+    <td th:text="${studentDetail.student.age}">1</td>
+    <td th:text="${studentDetail.student.gender}">性別</td>
+    <td th:text="${studentDetail.student.remark}">備考</td>
   </tr>
   </tbody>
 </table>

@@ -44,15 +44,15 @@ INSERT students values('deleted','imdeleted','imdeleted','[deleted]','deleted_ad
 
 
 courses
-INSERT students_courses values('s1','kozkinoaideli-','Java','2100-01-01','2100-12-31');
+INSERT students_courses values('1','1','Java','2100-01-01','2100-12-31');
 
-INSERT students_courses values('s2','fdchnnoideli-','Art','2100-01-02','2100-12-30');
+INSERT students_courses values('2','2','Art','2100-01-02','2100-12-30');
 
-INSERT students_courses values('s3','chrnnoideli-','Java','2100-01-03','2100-12-29');
+INSERT students_courses values('3','3','Java','2100-01-03','2100-12-29');
 
-INSERT students_courses values('s4','mcrinoideli-','Java','2100-01-04','2100-12-28');
+INSERT students_courses values('4','4','Java','2100-01-04','2100-12-28');
 
-INSERT students_courses values('s5','ndnoideli-','Art','2100-01-05','2100-12-27');
+INSERT students_courses values('5','5','Art','2100-01-05','2100-12-27');
 
 
 
