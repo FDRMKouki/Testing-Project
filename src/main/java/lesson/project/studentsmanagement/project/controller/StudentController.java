@@ -44,7 +44,7 @@ public class StudentController {
     System.out.println("POSTされた studentDetail: " + studentDetail);
 
     if (result.hasErrors()) {
-      // 🔴 これを忘れてると NullPointerException になる
+      //これを忘れてると NullPointerException になる
       model.addAttribute("studentDetail", studentDetail);
       return "registerStudent";
     }
@@ -97,19 +97,18 @@ public class StudentController {
   }
 
   //----生徒更新----
-  @GetMapping("/updateStudent/{id}")
+  @GetMapping("/updateStudent/{id}")//特定の生徒の更新画面
   public String showUpdateStudentForm(@PathVariable String id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
     return "updateStudent";
   }
 
-  @PostMapping("/updateStudent")
+  @PostMapping("/updateStudent")//更新ボタン押されたとき
   public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
       return "updateStudent";
     }
-
     service.updateStudent(studentDetail);
     return "redirect:/studentDetail/" + studentDetail.getStudent().getId();
   }

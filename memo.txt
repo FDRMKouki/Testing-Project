@@ -30,29 +30,29 @@ create table students_courses(id varchar(36),student_id varchar(36),
 course_name varchar(50),start_datetime_at datetime,predicted_complete_datetime_at datetime) default charset='utf8';
 
 EXAMPLE COMMANDS
-INSERT students values('kozkinoaideli-','Kozki','Kozuki','MRDF','1','nowhere',18,'male','kozkinoremark',0);
+INSERT students values(id,'Kozki','Kozuki','MRDF','1','nowhere',18,'male','kozkinoremark',0);
 
-INSERT students values('fdchnnoideli-','Fdchn','Fdchan','FDRM','2','here',20,'female','fdchnnoremark',0);
+INSERT students values(id,'Fdchn','Fdchan','FDRM','2','here',20,'female','fdchnnoremark',0);
 
-INSERT students values('chrnnoideli-','Chrn','Chrno','Cr','3','where',23,'female','chrnnoremark',0);
+INSERT students values(id,'Chrn','Chrno','Cr','3','where',23,'female','chrnnoremark',0);
 
-INSERT students values('mcrinoideli-','Mrci','Mecuri','Hg','4','everywhere',30,'female','mcrinoremark',0);
+INSERT students values(id,'Mrci','Mecuri','Hg','4','everywhere',30,'female','mcrinoremark',0);
 
-INSERT students values('ndnoideli-','Neodm','Neodym','Nd','5','elsewhere',29,'female','ndnoremark',0);
+INSERT students values(id,'Neodm','Neodym','Nd','5','elsewhere',29,'female','ndnoremark',0);
 
-INSERT students values('deleted','imdeleted','imdeleted','[deleted]','deleted_address','deleted',0,'none','[deleted]',1);
+INSERT students values(id,'imdeleted','imdeleted','[deleted]','deleted_address','deleted',0,'none','[deleted]',1);
 
 
 courses
-INSERT students_courses values('1','1','Java','2100-01-01','2100-12-31');
+INSERT students_courses values(id,'','Java','2100-01-01','2100-12-31');
 
-INSERT students_courses values('2','2','Art','2100-01-02','2100-12-30');
+INSERT students_courses values(id,'','Art','2100-01-02','2100-12-30');
 
-INSERT students_courses values('3','3','Java','2100-01-03','2100-12-29');
+INSERT students_courses values(id,'','Java','2100-01-03','2100-12-29');
 
-INSERT students_courses values('4','4','Java','2100-01-04','2100-12-28');
+INSERT students_courses values(id,'','Java','2100-01-04','2100-12-28');
 
-INSERT students_courses values('5','5','Art','2100-01-05','2100-12-27');
+INSERT students_courses values(id,'','Art','2100-01-05','2100-12-27');
 
 
 

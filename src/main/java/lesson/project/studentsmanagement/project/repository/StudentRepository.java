@@ -54,4 +54,9 @@ public interface StudentRepository {
       +
       "WHERE id = #{id}")
   void updateStudent(Student student);
+
+  //コースも
+  @Update("UPDATE students_courses SET course_name = #{courseName} " +
+      "WHERE id = #{id}")
+  void updateStudentsCourses(StudentsCourses studentsCourses);
 }

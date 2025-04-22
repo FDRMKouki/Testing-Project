@@ -31,6 +31,10 @@ public class StudentService {
     // 2. コース情報を登録（リストが null でない場合）
     List<StudentsCourses> courses = studentDetail.getStudentsCourses();
     if (courses != null) {
+      //名前が空のコースは登録されない
+      courses = courses.stream()
+          .filter(c -> c.getCourseName() != null && !c.getCourseName().trim().isEmpty())
+          .toList(); // Java 17+
       //開始日程は現在、終了予定日程は現在の1年後に
       LocalDateTime now = LocalDateTime.now();
       LocalDateTime oneYearLater = now.plusYears(1);
@@ -38,7 +42,7 @@ public class StudentService {
       for (StudentsCourses course : courses) {
         course.setStudentId(student.getId()); // 自動採番IDをセット！
         course.setStartDatetimeAt(now);
-        course.setPredictedCompleteDatetimeAt(oneYearLater);
+        course.setPredictedCompleteDatetimeAt(oneYearLater);//この行2つは日程の登録
         repository.registerStudentsCourses(course);
       }
     }
@@ -68,7 +72,11 @@ public class StudentService {
 
   //----生徒更新----
   public void updateStudent(StudentDetail studentDetail) {
+    //初めに生徒詳細の更新
     repository.updateStudent(studentDetail.getStudent());
+    //コースの名前更新
+    for (StudentsCourses course : studentDetail.getStudentsCourses()) {
+      repository.updateStudentsCourses(course); // id指定で更新
+    }
   }
-
 }

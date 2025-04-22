@@ -12,7 +12,6 @@ import lombok.Setter;
 public class StudentDetail {
 
   private Student student = new Student();
-
   private List<StudentsCourses> studentsCourses = new ArrayList<>();
 
   public StudentDetail() {

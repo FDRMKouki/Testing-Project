@@ -45,6 +45,24 @@
     </tr>
   </table>
 
+
+  <br/>
+  <div id="courses-container">
+    <h3>受講コース</h3>
+    <div th:each="course, stat : *{studentsCourses}" class="course-entry">
+      <input type="hidden"
+             th:name="'studentsCourses[' + ${stat.index} + '].id'"
+             th:value="*{studentsCourses[__${stat.index}__].id}"/>
+      <label th:for="'studentsCourses_' + ${stat.index} + '_courseName'">
+        コース名 [[${stat.index + 1}]]:
+      </label>
+      <input type="text"
+             th:field="*{studentsCourses[__${stat.index}__].courseName}"/>
+      <br/>
+    </div>
+  </div>
+  <br/><br/>
+
   <button type="submit">更新</button>
 </form>
 
