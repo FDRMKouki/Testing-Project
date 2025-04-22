@@ -1,5 +1,6 @@
 package lesson.project.studentsmanagement.project.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
@@ -30,8 +31,14 @@ public class StudentService {
     // 2. コース情報を登録（リストが null でない場合）
     List<StudentsCourses> courses = studentDetail.getStudentsCourses();
     if (courses != null) {
+      //開始日程は現在、終了予定日程は現在の1年後に
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime oneYearLater = now.plusYears(1);
+
       for (StudentsCourses course : courses) {
         course.setStudentId(student.getId()); // 自動採番IDをセット！
+        course.setStartDatetimeAt(now);
+        course.setPredictedCompleteDatetimeAt(oneYearLater);
         repository.registerStudentsCourses(course);
       }
     }
