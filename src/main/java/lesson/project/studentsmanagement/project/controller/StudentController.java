@@ -112,4 +112,12 @@ public class StudentController {
     service.updateStudent(studentDetail);
     return "redirect:/studentDetail/" + studentDetail.getStudent().getId();
   }
+
+  //----生徒論理削除----
+  @PostMapping("/deleteStudent")
+  public String deleteStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
+    System.out.println("削除される生徒id: " + studentDetail.getStudent());
+    service.logicalDeleteStudent(studentDetail.getStudent());
+    return "redirect:/studentList";
+  }
 }

@@ -65,7 +65,10 @@
 
   <button type="submit">更新</button>
 </form>
-
+<form th:action="@{/deleteStudent}" th:object="${studentDetail}" method="post">
+  <input type="hidden" th:field="*{student.id}"/>
+  <button type="submit">削除</button>
+</form>
 <p><a th:href="@{/studentDetail/{id}(id=${studentDetail.student.id})}">← 戻る</a></p>
 
 </body>
