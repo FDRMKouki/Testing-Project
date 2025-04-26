@@ -1,5 +1,6 @@
 package lesson.project.studentsmanagement.project.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
@@ -10,9 +11,13 @@ import lombok.Setter;
 @Setter
 public class StudentDetail {
 
-  //1つのStudent,複数のStudentCourse
-  //1生徒が複数のコース通っていた時を配慮
-  private Student student;
-  private List<StudentsCourses> studentsCourses;
+  private Student student = new Student();
+  private List<StudentsCourses> studentsCourses = new ArrayList<>();
 
+  public StudentDetail() {
+    // 初期状態で1つのコースを追加
+    studentsCourses.add(new StudentsCourses());
+  }
+
+  // getter/setter
 }
