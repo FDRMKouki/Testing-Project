@@ -70,9 +70,9 @@
 </table>
 
 <!-- 更新ボタン -->
-<form th:action="@{/updateStudent/{id}(id=${studentDetail.student.id})}" method="get">
-  <button type="submit">更新</button>
-</form>
+<a th:href="@{/updateStudent/{id}(id=${studentDetail.student.id})}">
+  <button type="button">更新</button>
+</a>
 
 <!-- 戻るリンク -->
 <p><a href="/studentList">← 一覧に戻る</a></p>

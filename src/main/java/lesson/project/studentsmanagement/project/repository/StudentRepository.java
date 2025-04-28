@@ -15,7 +15,7 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface StudentRepository {
 
-  @Select("SELECT * FROM students")
+  @Select("SELECT * FROM students WHERE is_deleted = 0")
   List<Student> searchStudent();
 
   @Select("SELECT * FROM students_courses")
@@ -59,4 +59,8 @@ public interface StudentRepository {
   @Update("UPDATE students_courses SET course_name = #{courseName} " +
       "WHERE id = #{id}")
   void updateStudentsCourses(StudentsCourses studentsCourses);
+
+  //----生徒論理削除の実行----
+  @Update("UPDATE students SET is_deleted = 1 WHERE id = #{id}")
+  void logicalDeleteStudent(Student student);
 }

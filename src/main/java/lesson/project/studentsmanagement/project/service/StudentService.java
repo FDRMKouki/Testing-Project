@@ -79,4 +79,9 @@ public class StudentService {
       repository.updateStudentsCourses(course); // id指定で更新
     }
   }
+
+  //----生徒論理削除----
+  public void logicalDeleteStudent(Student student) {
+    repository.logicalDeleteStudent(student);
+  }
 }
