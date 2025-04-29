@@ -5,6 +5,7 @@ import lesson.project.studentsmanagement.project.controller.converter.StudentCon
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
+import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +21,13 @@ public class StudentController {
 
   private StudentService service;
   private StudentConverter converter;
+  private PrintLogs printlogs;
 
   @Autowired
   public StudentController(StudentService service, StudentConverter converter) {
     this.service = service;
     this.converter = converter;
+    this.printlogs = new PrintLogs();
   }
 
   //----生徒登録----
@@ -53,15 +56,8 @@ public class StudentController {
     service.registerStudent(studentDetail);
 
     //確認用ログ
-    System.out.println("登録された生徒の全体情報");
-    System.out.println(studentDetail);
-    System.out.println("登録された生徒の個人の情報");
-    System.out.println("登録された生徒のId:" + studentDetail.getStudent().getId() + " 名前:"
-        + studentDetail.getStudent().getName() + " フリガナ:" + studentDetail.getStudent()
-        .getFurigana() + " ニックネーム:" + studentDetail.getStudent().getNickname() + " メールアドレス:"
-        + studentDetail.getStudent().getMailAddress() + " 地域:" + studentDetail.getStudent()
-        .getRegion() + " 性別:" + studentDetail.getStudent().getGender() + " 備考:"
-        + studentDetail.getStudent().getRemark());
+    System.out.println("作成された生徒:");
+    printlogs.printStudentDetail(studentDetail);
 
     //リダイレクト
     return "redirect:/studentList";
@@ -74,8 +70,8 @@ public class StudentController {
     List<Student> students = service.searchStudentList();
     List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
 
-    System.out.println("取得した生徒数: " + students.size());
-    System.out.println("取得したコース数: " + studentsCourses.size());
+    //確認用ログ
+    printlogs.printNotDeletedStudentsAndAllStudentCoursesInStudentList(students, studentsCourses);
 
     //コンバーター 全生徒追加完了後完成した詳細リストをhtmlのattributeに返す
     model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
@@ -87,6 +83,9 @@ public class StudentController {
   public String getStudentDetail(@PathVariable String id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
+    System.out.println("クリックされた生徒:");
+    //確認用ログ
+    printlogs.printStudentDetail(studentDetail);
     return "studentDetail";
   }
 
@@ -101,6 +100,9 @@ public class StudentController {
   public String showUpdateStudentForm(@PathVariable String id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
+    //確認用ログ
+    System.out.println("更新される生徒:");
+    printlogs.printStudentDetail(studentDetail);
     return "updateStudent";
   }
 
@@ -110,13 +112,14 @@ public class StudentController {
       return "updateStudent";
     }
     service.updateStudent(studentDetail);
+    System.out.println("Id:" + studentDetail.getStudent().getId() + "が更新されました");
     return "redirect:/studentDetail/" + studentDetail.getStudent().getId();
   }
 
   //----生徒論理削除----
   @PostMapping("/deleteStudent")
   public String deleteStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    System.out.println("削除される生徒id: " + studentDetail.getStudent());
+    System.out.println("削除された生徒Id:" + studentDetail.getStudent().getId());
     service.logicalDeleteStudent(studentDetail.getStudent());
     return "redirect:/studentList";
   }
