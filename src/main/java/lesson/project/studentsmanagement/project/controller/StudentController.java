@@ -8,15 +8,15 @@ import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class StudentController {
 
   private StudentService service;
@@ -66,16 +66,15 @@ public class StudentController {
   //----生徒表示----
   //Read 生徒情報を取得する
   @GetMapping("/studentList")
-  public String getStudentList(Model model) {
+  public List<StudentDetail> getStudentList() {
     List<Student> students = service.searchStudentList();
     List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
 
-    //確認用ログ
+    // 確認用ログ
     printlogs.printNotDeletedStudentsAndAllStudentCoursesInStudentList(students, studentsCourses);
 
-    //コンバーター 全生徒追加完了後完成した詳細リストをhtmlのattributeに返す
-    model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
-    return "studentList";
+    // コンバーターで変換し、JSONとして返却
+    return converter.convertStudentDetails(students, studentsCourses);
   }
 
   //名前をクリックされた生徒情報の表示
