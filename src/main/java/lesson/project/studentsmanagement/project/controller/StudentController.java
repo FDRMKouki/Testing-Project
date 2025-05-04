@@ -31,7 +31,7 @@ public class StudentController {
   }
 
   //----生徒登録----
-  //新規生徒登録画面 registerStudent.htmlを返すcurl "http://localhost:8080/newStudent"
+  //新規生徒登録画面 registerStudent.htmlを返す
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();  // ← ここで初期化済み
@@ -64,7 +64,7 @@ public class StudentController {
   }
 
   //----生徒表示----
-  //Read 生徒情報を取得する curl "http://localhost:8080/studentList"
+  //Read 生徒情報を取得する
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
     List<Student> students = service.searchStudentList();
@@ -89,7 +89,7 @@ public class StudentController {
     return "studentDetail";
   }
 
-  //Read 生徒コース情報を取得するcurl "http://localhost:8080/studentCourseList"
+  //Read 生徒コース情報を取得する
   @GetMapping("/studentCourseList")
   public List<StudentsCourses> getStudentCourseList() {
     return service.searchStudentsCourseList();
