@@ -19,5 +19,5 @@ public class Student {
   private String remark;
   private boolean isDeleted;
   private List<StudentsCourses> studentsCourses;
-
+//Postmanにて、送るjsonはこれに合わせる必要がある
 }

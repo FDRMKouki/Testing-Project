@@ -8,12 +8,14 @@ import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -105,14 +107,12 @@ public class StudentController {
     return "updateStudent";
   }
 
-  @PostMapping("/updateStudent")//更新ボタン押されたとき
-  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    if (result.hasErrors()) {
-      return "updateStudent";
-    }
+  @PostMapping("/updateStudent")//更新ボタン押されたとき。
+  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     System.out.println("Id:" + studentDetail.getStudent().getId() + "が更新されました");
-    return "redirect:/studentDetail/" + studentDetail.getStudent().getId();
+    //return "redirect:/studentDetail/" + studentDetail.getStudent().getId();
+    return ResponseEntity.ok("こうしんしょりせいこおお");
   }
 
   //----生徒論理削除----
