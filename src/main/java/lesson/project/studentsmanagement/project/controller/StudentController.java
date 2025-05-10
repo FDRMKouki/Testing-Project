@@ -44,15 +44,9 @@ public class StudentController {
 
   //生徒登録画面で登録ボタンが押されたとき
   @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result,
+  public ResponseEntity<String> registerStudent(@RequestBody StudentDetail studentDetail,
       Model model) {
     System.out.println("POSTされた studentDetail: " + studentDetail);
-
-    if (result.hasErrors()) {
-      //これを忘れてると NullPointerException になる
-      model.addAttribute("studentDetail", studentDetail);
-      return "registerStudent";
-    }
 
     // 登録サービス呼び出し
     service.registerStudent(studentDetail);
@@ -62,7 +56,7 @@ public class StudentController {
     printlogs.printStudentDetail(studentDetail);
 
     //リダイレクト
-    return "redirect:/studentList";
+    return ResponseEntity.ok("とうろくしょりせいこおお");
   }
 
   //----生徒表示----
