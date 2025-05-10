@@ -21,7 +21,7 @@ public class StudentService {
   }
 
   @Transactional
-  //----生徒登録----
+  //----生徒登録-----
   //生徒登録リポ呼び出し
   public void registerStudent(StudentDetail studentDetail) {
     // 1. 生徒情報を登録して、自動採番されたIDを取得
