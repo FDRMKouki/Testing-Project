@@ -33,30 +33,22 @@ public class StudentController {
   }
 
   //----生徒登録----
-  //新規生徒登録画面 registerStudent.htmlを返す
-  @GetMapping("/newStudent")
-  public String newStudent(Model model) {
-    StudentDetail studentDetail = new StudentDetail();  // ← ここで初期化済み
 
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudent";
-  }
-
-  //生徒登録画面で登録ボタンが押されたとき
+  //生徒登録Post
   @PostMapping("/registerStudent")
-  public ResponseEntity<String> registerStudent(@RequestBody StudentDetail studentDetail,
+  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail,
       Model model) {
     System.out.println("POSTされた studentDetail: " + studentDetail);
 
     // 登録サービス呼び出し
-    service.registerStudent(studentDetail);
+    StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
 
     //確認用ログ
     System.out.println("作成された生徒:");
     printlogs.printStudentDetail(studentDetail);
 
     //リダイレクト
-    return ResponseEntity.ok("とうろくしょりせいこおお");
+    return ResponseEntity.ok(responseStudentDetail);
   }
 
   //----生徒表示----
@@ -75,13 +67,11 @@ public class StudentController {
 
   //名前をクリックされた生徒情報の表示
   @GetMapping("/studentDetail/{id}")
-  public String getStudentDetail(@PathVariable String id, Model model) {
-    StudentDetail studentDetail = service.getStudentDetailById(id);
-    model.addAttribute("studentDetail", studentDetail);
+  public StudentDetail getStudentDetail(@PathVariable String id) {
     System.out.println("クリックされた生徒:");
     //確認用ログ
-    printlogs.printStudentDetail(studentDetail);
-    return "studentDetail";
+    printlogs.printStudentDetail(service.getStudentDetailById(id));
+    return service.getStudentDetailById(id);
   }
 
   //Read 生徒コース情報を取得する

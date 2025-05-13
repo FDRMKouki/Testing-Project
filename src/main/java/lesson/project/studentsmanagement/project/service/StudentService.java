@@ -23,7 +23,7 @@ public class StudentService {
   @Transactional
   //----生徒登録-----
   //生徒登録リポ呼び出し
-  public void registerStudent(StudentDetail studentDetail) {
+  public StudentDetail registerStudent(StudentDetail studentDetail) {
     // 1. 生徒情報を登録して、自動採番されたIDを取得
     Student student = studentDetail.getStudent();
     repository.registerStudent(student); // ここで student.id がセットされる
@@ -46,6 +46,7 @@ public class StudentService {
         repository.registerStudentsCourses(course);
       }
     }
+    return studentDetail;
   }
 
   //----生徒表示----
