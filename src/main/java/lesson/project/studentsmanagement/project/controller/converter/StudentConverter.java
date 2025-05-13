@@ -8,8 +8,20 @@ import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import org.springframework.stereotype.Component;
 
+/**
+ * 受講生情報(Student)とコース情報(StudentCourses)を合わせて受講生詳細(StudentDetail)に変換する。
+ * 受講生詳細の型の中に特定のIDの生徒とそのIDと紐づくコース情報を入れて包装するイメージ
+ */
 @Component
 public class StudentConverter {
+
+  /**
+   * 受講生に紐づくコース情報のマッピング。 コースは複数ある可能性もあるのでその数だけ繰り返し
+   *
+   * @param students        受講生一覧
+   * @param studentsCourses コース情報
+   * @return 受講生詳細情報リスト
+   */
 
   //生徒詳細変換メゾット(コンバーター)
   public List<StudentDetail> convertStudentDetails(List<Student> students,
@@ -22,7 +34,7 @@ public class StudentConverter {
 
       //論理削除されていない生徒のみ
       if (!student.isDeleted()) {
-        //StudentDetail型の変数作成、指定の生徒情報を入れる(1人)
+        //StudentDetail型の変数作成、指定の生徒の情報を入れる(1人)
         StudentDetail studentDetail = new StudentDetail();
         studentDetail.setStudent(student);
 

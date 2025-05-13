@@ -19,5 +19,4 @@ public class StudentDetail {
     studentsCourses.add(new StudentsCourses());
   }
 
-  // getter/setter
 }

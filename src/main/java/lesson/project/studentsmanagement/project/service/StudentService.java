@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 受講生情報を取り扱うサービス。 検索、登録、更新などを行う。
+ */
 @Service
 public class StudentService {
 
@@ -21,8 +24,12 @@ public class StudentService {
   }
 
   @Transactional
-  //----生徒登録-----
-  //生徒登録リポ呼び出し
+  //生徒の登録 CREATE
+//---------------
+
+/**
+ *登録処理
+ */
   public StudentDetail registerStudent(StudentDetail studentDetail) {
     // 1. 生徒情報を登録して、自動採番されたIDを取得
     Student student = studentDetail.getStudent();
@@ -34,7 +41,7 @@ public class StudentService {
       //名前が空のコースは登録されない
       courses = courses.stream()
           .filter(c -> c.getCourseName() != null && !c.getCourseName().trim().isEmpty())
-          .toList(); // Java 17+
+          .toList();
       //開始日程は現在、終了予定日程は現在の1年後に
       LocalDateTime now = LocalDateTime.now();
       LocalDateTime oneYearLater = now.plusYears(1);
@@ -49,18 +56,36 @@ public class StudentService {
     return studentDetail;
   }
 
-  //----生徒表示----
+  //生徒の表示系 READ
+//---------------
+
+  /**
+   * 削除されていない全ての生徒情報を取得する全件検索。
+   *
+   * @return 受講生(全件)
+   */
   //生徒リスト取得リポ呼び出し
   public List<Student> searchStudentList() {
     repository.searchStudent();
     return repository.searchStudent();
   }
 
+  /**
+   * (生徒コース情報を取得する)
+   *
+   * @return
+   */
   //生徒コースリスト取得リポ呼び出し
   public List<StudentsCourses> searchStudentsCourseList() {
     return repository.searchStudentCourse();
   }
 
+  /**
+   * 単一の生徒情報を取得する。コース情報はその受講生のIDに紐づくものを持ってくるようにする
+   *
+   * @param id 受講生ID
+   * @return そのIDの受講生の詳細
+   */
   //名前をクリックされた生徒情報取得リポ呼び出し
   public StudentDetail getStudentDetailById(String id) {
     Student student = repository.findStudentById(id);
@@ -71,7 +96,14 @@ public class StudentService {
     return detail;
   }
 
-  //----生徒更新----
+  //生徒の更新 UPDATE
+//---------------
+
+  /**
+   * 生徒の更新
+   *
+   * @param studentDetail 受講生詳細
+   */
   public void updateStudent(StudentDetail studentDetail) {
     //初めに生徒詳細の更新
     repository.updateStudent(studentDetail.getStudent());
@@ -81,7 +113,14 @@ public class StudentService {
     }
   }
 
-  //----生徒論理削除----
+  //生徒の削除 DELETE
+//---------------
+
+  /**
+   * 論理削除処理 DELETE
+   *
+   * @param student
+   */
   public void logicalDeleteStudent(Student student) {
     repository.logicalDeleteStudent(student);
   }
