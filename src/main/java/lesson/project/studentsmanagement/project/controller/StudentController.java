@@ -99,7 +99,7 @@ public class StudentController {
     return ResponseEntity.ok("こうしんしょりせいこおお");
   }
 
-  //----生徒論理削除-----
+  //----生徒論理削除----
   @PostMapping("/deleteStudent")
   public String deleteStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
     System.out.println("削除された生徒Id:" + studentDetail.getStudent().getId());
