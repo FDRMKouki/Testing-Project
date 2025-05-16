@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class StudentDetail {
 
   private Student student = new Student();
   private List<StudentsCourses> studentsCourses = new ArrayList<>();
 
-  public StudentDetail() {
-    // 初期状態で1つのコースを追加
-    studentsCourses.add(new StudentsCourses());
-  }
 
 }

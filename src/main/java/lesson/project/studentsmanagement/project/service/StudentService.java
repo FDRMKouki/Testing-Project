@@ -2,6 +2,7 @@ package lesson.project.studentsmanagement.project.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
 
   private StudentRepository repository;
+  private StudentConverter converter;
 
   @Autowired
-  public StudentService(StudentRepository repository) {
+  public StudentService(StudentRepository repository, StudentConverter converter) {
     this.repository = repository;
+    this.converter = converter;
   }
 
   @Transactional
@@ -65,19 +68,10 @@ public class StudentService {
    * @return 受講生(全件)
    */
   //生徒リスト取得リポ呼び出し
-  public List<Student> searchStudentList() {
-    repository.searchStudent();
-    return repository.searchStudent();
-  }
-
-  /**
-   * (生徒コース情報を取得する)
-   *
-   * @return
-   */
-  //生徒コースリスト取得リポ呼び出し
-  public List<StudentsCourses> searchStudentsCourseList() {
-    return repository.searchStudentCourse();
+  public List<StudentDetail> searchStudentList() {
+    List<Student> studentList = repository.searchStudent();
+    List<StudentsCourses> studentCoursesList = repository.searchStudentCourse();
+    return converter.convertStudentDetails(studentList, studentCoursesList);
   }
 
   /**
@@ -90,10 +84,7 @@ public class StudentService {
   public StudentDetail getStudentDetailById(String id) {
     Student student = repository.findStudentById(id);
     List<StudentsCourses> courses = repository.findCoursesByStudentId(id);
-    StudentDetail detail = new StudentDetail();
-    detail.setStudent(student);
-    detail.setStudentsCourses(courses);
-    return detail;
+    return new StudentDetail(student, courses);
   }
 
   //生徒の更新 UPDATE

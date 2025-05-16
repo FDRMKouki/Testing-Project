@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 受講生情報(Student)とコース情報(StudentCourses)を合わせて受講生詳細(StudentDetail)に変換する。
- * 受講生詳細の型の中に特定のIDの生徒とそのIDと紐づくコース情報を入れて包装するイメージ
+ * 受講生詳細の箱の中に特定のIDの生徒とそのIDと紐づくコース情報を入れて包装するイメージ
  */
 @Component
 public class StudentConverter {

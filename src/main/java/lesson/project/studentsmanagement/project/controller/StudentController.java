@@ -1,9 +1,6 @@
 package lesson.project.studentsmanagement.project.controller;
 
 import java.util.List;
-import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
-import lesson.project.studentsmanagement.project.data.Student;
-import lesson.project.studentsmanagement.project.data.StudentsCourses;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
@@ -25,13 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudentController {
 
   private StudentService service;
-  private StudentConverter converter;
   private PrintLogs printlogs;
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter) {
+  public StudentController(StudentService service) {
     this.service = service;
-    this.converter = converter;
     this.printlogs = new PrintLogs();
   }
 
@@ -69,12 +64,8 @@ public class StudentController {
    */
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
-    List<Student> students = service.searchStudentList();
-    List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
-    // 確認用ログ
-    printlogs.printNotDeletedStudentsAndAllStudentCoursesInStudentList(students, studentsCourses);
     // コンバーターで変換し、JSONとして返却
-    return converter.convertStudentDetails(students, studentsCourses);
+    return service.searchStudentList();
   }
 
   /**
@@ -89,16 +80,6 @@ public class StudentController {
     //確認用ログ
     printlogs.printStudentDetail(service.getStudentDetailById(id));
     return service.getStudentDetailById(id);
-  }
-
-  /**
-   * (生徒コース情報を取得する)
-   *
-   * @return 全てのコース情報
-   */
-  @GetMapping("/studentCourseList")
-  public List<StudentsCourses> getStudentCourseList() {
-    return service.searchStudentsCourseList();
   }
 
   //生徒の更新 UPDATE
