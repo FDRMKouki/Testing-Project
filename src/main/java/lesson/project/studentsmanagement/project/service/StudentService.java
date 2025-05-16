@@ -2,6 +2,7 @@ package lesson.project.studentsmanagement.project.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentsCourses;
@@ -12,13 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 受講生情報を取り扱うサービス。 検索、登録、更新などを行う。
+ * 受講生情報の登録、検索、更新、削除を行うサービス。
  */
 @Service
 public class StudentService {
 
-  private StudentRepository repository;
-  private StudentConverter converter;
+  private final StudentRepository repository;
+  private final StudentConverter converter;
 
   @Autowired
   public StudentService(StudentRepository repository, StudentConverter converter) {
@@ -26,48 +27,50 @@ public class StudentService {
     this.converter = converter;
   }
 
+  // ----------- Create -----------
+
+  /**
+   * 生徒を登録する。
+   *
+   * @param studentDetail 登録する生徒情報
+   * @return 登録された生徒詳細
+   */
   @Transactional
-  //生徒の登録 CREATE
-//---------------
-
-/**
- *登録処理
- */
   public StudentDetail registerStudent(StudentDetail studentDetail) {
-    // 1. 生徒情報を登録して、自動採番されたIDを取得
     Student student = studentDetail.getStudent();
-    repository.registerStudent(student); // ここで student.id がセットされる
+    repository.registerStudent(student);  // IDがセットされる
 
-    // 2. コース情報を登録（リストが null でない場合）
-    List<StudentsCourses> courses = studentDetail.getStudentsCourses();
-    if (courses != null) {
-      //名前が空のコースは登録されない
-      courses = courses.stream()
-          .filter(c -> c.getCourseName() != null && !c.getCourseName().trim().isEmpty())
-          .toList();
-      //開始日程は現在、終了予定日程は現在の1年後に
-      LocalDateTime now = LocalDateTime.now();
-      LocalDateTime oneYearLater = now.plusYears(1);
+    List<StudentsCourses> courses = filterValidCourses(studentDetail.getStudentsCourses());
 
-      for (StudentsCourses course : courses) {
-        course.setStudentId(student.getId()); // 自動採番IDをセット！
-        course.setStartDatetimeAt(now);
-        course.setPredictedCompleteDatetimeAt(oneYearLater);//この行2つは日程の登録
-        repository.registerStudentsCourses(course);
-      }
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime oneYearLater = now.plusYears(1);
+
+    for (StudentsCourses course : courses) {
+      course.setStudentId(student.getId());
+      course.setStartDatetimeAt(now);
+      course.setPredictedCompleteDatetimeAt(oneYearLater);
+      repository.registerStudentsCourses(course);
     }
+
     return studentDetail;
   }
 
-  //生徒の表示系 READ
-//---------------
+  private List<StudentsCourses> filterValidCourses(List<StudentsCourses> courses) {
+    if (courses == null) {
+      return List.of();
+    }
+    return courses.stream()
+        .filter(c -> c.getCourseName() != null && !c.getCourseName().trim().isEmpty())
+        .collect(Collectors.toList());
+  }
+
+  // ----------- Read -----------
 
   /**
-   * 削除されていない全ての生徒情報を取得する全件検索。
+   * 削除されていない全ての生徒情報を取得。
    *
-   * @return 受講生(全件)
+   * @return 全受講生の詳細情報リスト
    */
-  //生徒リスト取得リポ呼び出し
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchStudent();
     List<StudentsCourses> studentCoursesList = repository.searchStudentCourse();
@@ -75,42 +78,37 @@ public class StudentService {
   }
 
   /**
-   * 単一の生徒情報を取得する。コース情報はその受講生のIDに紐づくものを持ってくるようにする
+   * 指定IDの受講生情報を取得。
    *
-   * @param id 受講生ID
-   * @return そのIDの受講生の詳細
+   * @param id 生徒ID
+   * @return 生徒詳細
    */
-  //名前をクリックされた生徒情報取得リポ呼び出し
   public StudentDetail getStudentDetailById(String id) {
     Student student = repository.findStudentById(id);
     List<StudentsCourses> courses = repository.findCoursesByStudentId(id);
     return new StudentDetail(student, courses);
   }
 
-  //生徒の更新 UPDATE
-//---------------
+  // ----------- Update -----------
 
   /**
-   * 生徒の更新
+   * 生徒とコース名を更新する。
    *
-   * @param studentDetail 受講生詳細
+   * @param studentDetail 更新内容
    */
   public void updateStudent(StudentDetail studentDetail) {
-    //初めに生徒詳細の更新
     repository.updateStudent(studentDetail.getStudent());
-    //コースの名前更新
     for (StudentsCourses course : studentDetail.getStudentsCourses()) {
-      repository.updateStudentsCourses(course); // id指定で更新
+      repository.updateStudentsCourses(course);
     }
   }
 
-  //生徒の削除 DELETE
-//---------------
+  // ----------- Delete -----------
 
   /**
-   * 論理削除処理 DELETE
+   * 論理削除（is_deleted = true など）を実施。
    *
-   * @param student
+   * @param student 対象の生徒
    */
   public void logicalDeleteStudent(Student student) {
     repository.logicalDeleteStudent(student);
