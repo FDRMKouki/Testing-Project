@@ -18,6 +18,6 @@ public class Student {
   private String gender;
   private String remark;
   private boolean isDeleted;
-  private List<StudentsCourses> studentsCourses;
+  private List<StudentCourse> studentCourse;
 //Postmanにて、送るjsonはこれに合わせる必要がある
 }

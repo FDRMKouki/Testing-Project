@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -91,12 +92,12 @@ public class StudentController {
   }
 
   /**
-   * 生徒情報を更新する。
+   * 生徒情報を更新する。 キャンセルフラグ更新もこっち(論理削除)
    *
    * @param studentDetail 更新する生徒詳細
-   * @return 更新完了メッセージ
+   * @return 実行結果
    */
-  @PostMapping("/updateStudent")
+  @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     logger.info("ID {} が更新されました", studentDetail.getStudent().getId());

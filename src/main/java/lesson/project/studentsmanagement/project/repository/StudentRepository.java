@@ -2,7 +2,7 @@ package lesson.project.studentsmanagement.project.repository;
 
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
-import lesson.project.studentsmanagement.project.data.StudentsCourses;
+import lesson.project.studentsmanagement.project.data.StudentCourse;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -36,7 +36,7 @@ public interface StudentRepository {
   /**
    * コースを登録する（IDは自動採番）。
    *
-   * @param studentsCourses コース情報
+   * @param studentCourse コース情報
    */
   @Insert("""
       INSERT INTO students_courses (
@@ -46,7 +46,7 @@ public interface StudentRepository {
       )
       """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
-  void registerStudentsCourses(StudentsCourses studentsCourses);
+  void registerStudentCourse(StudentCourse studentCourse);
 
   // ----------- Read -----------
 
@@ -64,7 +64,7 @@ public interface StudentRepository {
    * @return コースリスト
    */
   @Select("SELECT * FROM students_courses")
-  List<StudentsCourses> searchStudentCourse();
+  List<StudentCourse> searchStudentCourseList();
 
   /**
    * 指定IDの生徒を取得する。
@@ -82,7 +82,7 @@ public interface StudentRepository {
    * @return コース情報のリスト
    */
   @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
-  List<StudentsCourses> findCoursesByStudentId(String studentId);
+  List<StudentCourse> searchStudentCourse(String studentId);
 
   // ----------- Update -----------
 
@@ -106,16 +106,16 @@ public interface StudentRepository {
   void updateStudent(Student student);
 
   /**
-   * コース名のみ更新する。
+   * コース情報の更新。 名前のみ更新する。
    *
-   * @param studentsCourses 更新後のコース情報
+   * @param studentCourse 更新後のコース情報
    */
   @Update("""
       UPDATE students_courses SET
         course_name = #{courseName}
       WHERE id = #{id}
       """)
-  void updateStudentsCourses(StudentsCourses studentsCourses);
+  void updateStudentCourse(StudentCourse studentCourse);
 
   // ----------- Delete -----------
 

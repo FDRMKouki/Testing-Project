@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
 import lesson.project.studentsmanagement.project.data.Student;
-import lesson.project.studentsmanagement.project.data.StudentsCourses;
+import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class StudentService {
   // ----------- Create -----------
 
   /**
-   * 生徒を登録する。
+   * 生徒を登録する。 IDは自動採番、IDに紐づくコース情報は終了予定日程が現在日程の1年後になってる
    *
    * @param studentDetail 登録する生徒情報
    * @return 登録された生徒詳細
@@ -40,22 +40,35 @@ public class StudentService {
     Student student = studentDetail.getStudent();
     repository.registerStudent(student);  // IDがセットされる
 
-    List<StudentsCourses> courses = filterValidCourses(studentDetail.getStudentsCourses());
+    List<StudentCourse> courses = filterValidCourses(studentDetail.getStudentCourseList());
 
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime oneYearLater = now.plusYears(1);
 
-    for (StudentsCourses course : courses) {
-      course.setStudentId(student.getId());
-      course.setStartDatetimeAt(now);
-      course.setPredictedCompleteDatetimeAt(oneYearLater);
-      repository.registerStudentsCourses(course);
+    for (StudentCourse course : courses) {
+      initStudentsCourse(course, student, now, oneYearLater);
+      repository.registerStudentCourse(course);
     }
 
     return studentDetail;
   }
 
-  private List<StudentsCourses> filterValidCourses(List<StudentsCourses> courses) {
+  /**
+   * コース情報を登録するときの初期情報の設定
+   *
+   * @param course       コース情報
+   * @param student      生徒
+   * @param now          今
+   * @param oneYearLater 今から1年後
+   */
+  private void initStudentsCourse(StudentCourse course, Student student, LocalDateTime now,
+      LocalDateTime oneYearLater) {
+    course.setStudentId(student.getId());
+    course.setStartDatetimeAt(now);
+    course.setPredictedCompleteDatetimeAt(oneYearLater);
+  }
+
+  private List<StudentCourse> filterValidCourses(List<StudentCourse> courses) {
     if (courses == null) {
       return List.of();
     }
@@ -73,7 +86,7 @@ public class StudentService {
    */
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchStudent();
-    List<StudentsCourses> studentCoursesList = repository.searchStudentCourse();
+    List<StudentCourse> studentCoursesList = repository.searchStudentCourseList();
     return converter.convertStudentDetails(studentList, studentCoursesList);
   }
 
@@ -85,22 +98,22 @@ public class StudentService {
    */
   public StudentDetail getStudentDetailById(String id) {
     Student student = repository.findStudentById(id);
-    List<StudentsCourses> courses = repository.findCoursesByStudentId(id);
+    List<StudentCourse> courses = repository.searchStudentCourse(id);
     return new StudentDetail(student, courses);
   }
 
   // ----------- Update -----------
 
   /**
-   * 生徒とコース名を更新する。
+   * 生徒とコース名を更新する。 生徒とコースの情報をそれぞれ更新
    *
    * @param studentDetail 更新内容
    */
+  @Transactional
   public void updateStudent(StudentDetail studentDetail) {
     repository.updateStudent(studentDetail.getStudent());
-    for (StudentsCourses course : studentDetail.getStudentsCourses()) {
-      repository.updateStudentsCourses(course);
-    }
+    studentDetail.getStudentCourseList()
+        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
   }
 
   // ----------- Delete -----------
