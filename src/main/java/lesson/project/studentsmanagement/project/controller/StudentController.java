@@ -4,123 +4,117 @@ import java.util.List;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 受講生の登録、更新、削除などを行うREST APIとして実行されるコントローラー
+ * 受講生の登録、更新、削除などを行うREST APIコントローラー。
  */
 @RestController
 public class StudentController {
 
-  private StudentService service;
-  private PrintLogs printlogs;
+  private final StudentService service;
+  private final PrintLogs printlogs = new PrintLogs();
+  private final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
   @Autowired
   public StudentController(StudentService service) {
     this.service = service;
-    this.printlogs = new PrintLogs();
   }
 
-  //生徒の登録 CREATE
-//---------------
+  // ----------- Create -----------
 
   /**
-   * 登録処理
+   * 生徒を登録する。
    *
-   * @param studentDetail 生徒詳細
-   * @param model         モデル
-   * @return　登録された生徒の詳細
+   * @param studentDetail 登録する生徒情報
+   * @return 登録された生徒詳細
    */
-  //生徒登録のPost
   @PostMapping("/registerStudent")
-  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail,
-      Model model) {
-    System.out.println("POSTされた studentDetail: " + studentDetail);
-    // 登録サービス呼び出し
-    StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
-    //確認用ログ
-    System.out.println("作成された生徒:");
-    printlogs.printStudentDetail(studentDetail);
-    //リダイレクト
-    return ResponseEntity.ok(responseStudentDetail);
+  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
+    logger.info("POSTされた studentDetail: {}", studentDetail);
+    StudentDetail registered = service.registerStudent(studentDetail);
+    logger.info("作成された生徒:");
+    printlogs.printStudentDetail(registered);
+    return ResponseEntity.ok(registered);
   }
 
-  //生徒の表示系 READ
-//---------------
+  // ----------- Read -----------
 
   /**
-   * 削除されていない全ての生徒情報を取得する全件検索。
+   * 全生徒情報を取得する。
    *
-   * @return 受講生(全件)
+   * @return 生徒詳細のリスト
    */
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
-    // コンバーターで変換し、JSONとして返却
     return service.searchStudentList();
   }
 
   /**
-   * 単一の生徒情報を取得する。 コース情報はその受講生のIDに紐づくものを持ってくるようにする
+   * 指定IDの生徒詳細を取得する。
    *
-   * @param id 受講生ID
-   * @return そのIDの受講生の詳細
+   * @param id 生徒ID
+   * @return 生徒詳細
    */
   @GetMapping("/studentDetail/{id}")
   public StudentDetail getStudentDetail(@PathVariable String id) {
-    System.out.println("詳細を表示する生徒:");
-    //確認用ログ
-    printlogs.printStudentDetail(service.getStudentDetailById(id));
-    return service.getStudentDetailById(id);
+    StudentDetail detail = service.getStudentDetailById(id);
+    logger.info("詳細を表示する生徒:");
+    printlogs.printStudentDetail(detail);
+    return detail;
   }
 
-  //生徒の更新 UPDATE
-//---------------
+  // ----------- Update -----------
 
-  @GetMapping("/updateStudent/{id}")//特定の生徒の更新画面
-  public String showUpdateStudentForm(@PathVariable String id, Model model) {
+  /**
+   * 生徒更新フォームを表示。
+   *
+   * @param id 生徒ID
+   * @return テンプレート名
+   */
+  @GetMapping("/updateStudent/{id}")
+  public String showUpdateStudentForm(@PathVariable String id, org.springframework.ui.Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
-    //確認用ログ
-    System.out.println("更新される生徒:");
+    logger.info("更新される生徒:");
     printlogs.printStudentDetail(studentDetail);
     return "updateStudent";
   }
 
   /**
-   * 生徒の更新
+   * 生徒情報を更新する。 キャンセルフラグ更新もこっち(論理削除)
    *
-   * @param studentDetail 受講生詳細
-   * @return 受講生詳細更新が成功しました
+   * @param studentDetail 更新する生徒詳細
+   * @return 実行結果
    */
-  @PostMapping("/updateStudent")
+  @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
-    System.out.println("Id:" + studentDetail.getStudent().getId() + "が更新されました");
+    logger.info("ID {} が更新されました", studentDetail.getStudent().getId());
     return ResponseEntity.ok("こうしんしょりせいこおお");
   }
 
-//生徒の削除 DELETE
-//---------------
+  // ----------- Delete -----------
 
   /**
-   * 論理削除処理 DELETE
+   * 生徒を論理削除する。
    *
-   * @param studentDetail 受講生詳細
-   * @param result
-   * @return
+   * @param studentDetail 削除対象の生徒
+   * @return リダイレクト先
    */
   @PostMapping("/deleteStudent")
-  public String deleteStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    System.out.println("削除された生徒Id:" + studentDetail.getStudent().getId());
+  public String deleteStudent(@ModelAttribute StudentDetail studentDetail) {
+    logger.info("削除された生徒ID: {}", studentDetail.getStudent().getId());
     service.logicalDeleteStudent(studentDetail.getStudent());
     return "redirect:/studentList";
   }
