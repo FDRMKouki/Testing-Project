@@ -33,6 +33,9 @@ dependencies {
     //Apache Commons Lang追加
     implementation 'org.apache.commons:commons-lang3:3.17.0'
 
+    //Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

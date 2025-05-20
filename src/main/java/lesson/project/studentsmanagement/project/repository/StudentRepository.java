@@ -55,7 +55,6 @@ public interface StudentRepository {
    *
    * @return 生徒リスト
    */
-  @Select("SELECT * FROM students WHERE is_deleted = 0")
   List<Student> searchStudent();
 
   /**
@@ -72,7 +71,6 @@ public interface StudentRepository {
    * @param id 生徒ID
    * @return 生徒情報
    */
-  @Select("SELECT * FROM students WHERE id = #{id}")
   Student findStudentById(String id);
 
   /**

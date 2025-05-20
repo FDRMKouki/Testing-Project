@@ -67,6 +67,7 @@ public class StudentController {
    * @return 生徒詳細
    */
   @GetMapping("/studentDetail/{id}")
+  //TODO @NotNull追加
   public StudentDetail getStudentDetail(@PathVariable String id) {
     StudentDetail detail = service.getStudentDetailById(id);
     logger.info("詳細を表示する生徒:");
