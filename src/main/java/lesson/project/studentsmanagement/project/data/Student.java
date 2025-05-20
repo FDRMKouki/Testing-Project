@@ -17,7 +17,7 @@ public class Student {
   private int age;
   private String gender;
   private String remark;
-  private boolean isDeleted;
+  private boolean deleted;
   private List<StudentCourse> studentCourse;
 //Postmanにて、送るjsonはこれに合わせる必要がある
 }

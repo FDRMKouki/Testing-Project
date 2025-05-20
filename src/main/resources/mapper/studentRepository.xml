@@ -3,15 +3,68 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="lesson.project.studentsmanagement.project.repository.StudentRepository">
-
+  <!--Create-->
+  <!--生徒を登録する（IDは自動採番）。-->
+  <insert id="registerStudent" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO students (
+    name, furigana, nickname, mail_address, region, age, gender, remark, is_deleted
+    ) VALUES (
+    #{name}, #{furigana}, #{nickname}, #{mailAddress}, #{region},
+    #{age}, #{gender}, #{remark}, 0
+    )
+  </insert>
+  <!--コースを登録する（IDは自動採番）。-->
+  <insert id="registerStudentCourse" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO students_courses (
+    student_id, course_name, start_datetime_at, predicted_complete_datetime_at
+    ) VALUES (
+    #{studentId}, #{courseName}, #{startDatetimeAt}, #{predictedCompleteDatetimeAt}
+    )
+  </insert>
+  <!--Read-->
   <!--論理削除されていない全生徒を取得する。-->
   <select id="searchStudent" resultType="lesson.project.studentsmanagement.project.data.Student">
     SELECT * FROM students WHERE is_deleted = 0
   </select>
-
+  <!--全てのコース情報を取得する。-->
+  <select id="searchStudentCourseList"
+    resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
+    SELECT * FROM students_courses
+  </select>
   <!--指定IDの生徒を取得する。-->
   <select id="findStudentById" resultType="lesson.project.studentsmanagement.project.data.Student">
     SELECT * FROM students WHERE id = #{id}
   </select>
+  <!--指定生徒IDに紐づく全コース情報を取得する。-->
+  <select id="searchStudentCourse"
+    resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
+    SELECT * FROM students_courses WHERE student_id = #{studentId}
+  </select>
+  <!--Update-->
+  <!--生徒情報を更新する。-->
+  <update id="updateStudent">
+    UPDATE students SET
+    name = #{name},
+    furigana = #{furigana},
+    nickname = #{nickname},
+    mail_address = #{mailAddress},
+    region = #{region},
+    age = #{age},
+    gender = #{gender},
+    remark = #{remark},
+    is_deleted = #{deleted}
+    WHERE id = #{id}
+  </update>
+  <!--コース情報の更新。 名前のみ更新する。-->
+  <update id="updateStudentCourse">
+    UPDATE students_courses SET
+    course_name = #{courseName}
+    WHERE id = #{id}
+  </update>
+  <!--Delete-->
+  <!--指定IDの生徒を論理削除する（is_deleted = 1）。-->
+  <update id="logicalDeleteStudent">
+    UPDATE students SET is_deleted = 1 WHERE id = #{id}
+  </update>
 
 </mapper>

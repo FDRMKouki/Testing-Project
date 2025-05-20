@@ -3,11 +3,8 @@ package lesson.project.studentsmanagement.project.repository;
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 /**
  * 生徒・コース情報に対するDB操作（登録・検索・更新・削除）を担当するリポジトリ。
@@ -22,14 +19,6 @@ public interface StudentRepository {
    *
    * @param student 生徒情報
    */
-  @Insert("""
-      INSERT INTO students (
-        name, furigana, nickname, mail_address, region, age, gender, remark, is_deleted
-      ) VALUES (
-        #{name}, #{furigana}, #{nickname}, #{mailAddress}, #{region},
-        #{age}, #{gender}, #{remark}, 0
-      )
-      """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudent(Student student);
 
@@ -38,13 +27,6 @@ public interface StudentRepository {
    *
    * @param studentCourse コース情報
    */
-  @Insert("""
-      INSERT INTO students_courses (
-        student_id, course_name, start_datetime_at, predicted_complete_datetime_at
-      ) VALUES (
-        #{studentId}, #{courseName}, #{startDatetimeAt}, #{predictedCompleteDatetimeAt}
-      )
-      """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentCourse(StudentCourse studentCourse);
 
@@ -62,7 +44,7 @@ public interface StudentRepository {
    *
    * @return コースリスト
    */
-  @Select("SELECT * FROM students_courses")
+
   List<StudentCourse> searchStudentCourseList();
 
   /**
@@ -79,7 +61,6 @@ public interface StudentRepository {
    * @param studentId 生徒ID
    * @return コース情報のリスト
    */
-  @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
   List<StudentCourse> searchStudentCourse(String studentId);
 
   // ----------- Update -----------
@@ -89,18 +70,6 @@ public interface StudentRepository {
    *
    * @param student 更新後の生徒情報
    */
-  @Update("""
-      UPDATE students SET
-        name = #{name},
-        furigana = #{furigana},
-        nickname = #{nickname},
-        mail_address = #{mailAddress},
-        region = #{region},
-        age = #{age},
-        gender = #{gender},
-        remark = #{remark}
-      WHERE id = #{id}
-      """)
   void updateStudent(Student student);
 
   /**
@@ -108,11 +77,6 @@ public interface StudentRepository {
    *
    * @param studentCourse 更新後のコース情報
    */
-  @Update("""
-      UPDATE students_courses SET
-        course_name = #{courseName}
-      WHERE id = #{id}
-      """)
   void updateStudentCourse(StudentCourse studentCourse);
 
   // ----------- Delete -----------
@@ -122,6 +86,5 @@ public interface StudentRepository {
    *
    * @param student 対象生徒
    */
-  @Update("UPDATE students SET is_deleted = 1 WHERE id = #{id}")
   void logicalDeleteStudent(Student student);
 }
