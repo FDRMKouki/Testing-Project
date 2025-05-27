@@ -7,6 +7,7 @@ import lesson.project.studentsmanagement.project.controller.converter.StudentCon
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
+import lesson.project.studentsmanagement.project.exception.StudentNotFoundException;
 import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,6 +99,9 @@ public class StudentService {
    */
   public StudentDetail getStudentDetailById(String id) {
     Student student = repository.findStudentById(id);
+    if (student == null) {
+      throw new StudentNotFoundException("生徒ID " + id + " は存在しません。");
+    }
     List<StudentCourse> courses = repository.searchStudentCourse(id);
     return new StudentDetail(student, courses);
   }
@@ -111,6 +115,10 @@ public class StudentService {
    */
   @Transactional
   public void updateStudent(StudentDetail studentDetail) {
+    if (studentDetail.getStudent() == null || studentDetail.getStudent().getId() == null) {
+      throw new IllegalArgumentException("IDは必須です。");
+    }
+
     repository.updateStudent(studentDetail.getStudent());
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
