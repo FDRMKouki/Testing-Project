@@ -1,5 +1,6 @@
 package lesson.project.studentsmanagement.project.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import lesson.project.studentsmanagement.project.data.Student;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Schema(description = "受講生詳細")
 @Getter
 @Setter
 @NoArgsConstructor

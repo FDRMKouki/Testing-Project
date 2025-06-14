@@ -1,5 +1,6 @@
 package lesson.project.studentsmanagement.project.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,6 +44,7 @@ public class StudentController {
    * @param studentDetail 登録する生徒情報
    * @return 登録された生徒詳細
    */
+  @Operation(summary = "受講生登録", description = "受講生を登録する。")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
@@ -60,6 +62,7 @@ public class StudentController {
    *
    * @return 生徒詳細のリスト
    */
+  @Operation(summary = "一覧検索", description = "受講生の一覧を検索する。")
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() throws TestException {
     //throw new TestException("XP");
@@ -72,6 +75,7 @@ public class StudentController {
    * @param id 生徒ID
    * @return 生徒詳細
    */
+  @Operation(summary = "受講生詳細検索", description = "特定のIDの受講生を検索する。")
   @GetMapping("/studentDetail/{id}")
   public StudentDetail getStudentDetail(
       @PathVariable @NotNull @NotBlank @Pattern(regexp = "^\\d+$") String id) {
@@ -89,6 +93,7 @@ public class StudentController {
    * @param id 生徒ID
    * @return テンプレート名
    */
+  @Operation(summary = "受講生更新フォーム表示用", description = "受講生を更新するときの画面を表示するためのメゾット。")
   @GetMapping("/updateStudent/{id}")
   public String showUpdateStudentForm(@PathVariable @NotNull String id,
       org.springframework.ui.Model model) {
@@ -105,6 +110,7 @@ public class StudentController {
    * @param studentDetail 更新する生徒詳細
    * @return 実行結果
    */
+  @Operation(summary = "受講生更新", description = "特定のIDの受講生詳細を更新する。")
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
@@ -120,6 +126,7 @@ public class StudentController {
    * @param studentDetail 削除対象の生徒
    * @return リダイレクト先
    */
+  @Operation(summary = "受講生削除", description = "特定のIDの受講生を削除する。")
   @PutMapping("/deleteStudent")
   public ResponseEntity<String> deleteStudent(@RequestBody StudentDetail studentDetail) {
     service.logicalDeleteStudent(studentDetail.getStudent());

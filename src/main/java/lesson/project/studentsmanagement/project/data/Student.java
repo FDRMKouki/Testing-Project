@@ -1,11 +1,13 @@
 package lesson.project.studentsmanagement.project.data;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+@Schema(description = "受講生情報")
 @Getter
 @Setter
 public class Student {
@@ -31,6 +33,8 @@ public class Student {
   private String remark;
 
   private boolean deleted;
+
+  @Schema(hidden = true)
   private List<StudentCourse> studentCourse;
 //Postmanにて、送るjsonはこれに合わせる必要がある
 }
