@@ -36,6 +36,9 @@ dependencies {
     //Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // OpenAPI Generator(映像では2.5.0でした)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
