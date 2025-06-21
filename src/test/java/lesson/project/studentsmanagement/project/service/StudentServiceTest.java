@@ -55,7 +55,36 @@ class StudentServiceTest {
   }
 
   @Test
-  void 生徒とコース情報が正常に登録されることのテスト() {
+  void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
+    // 準備
+    String id = "123";
+
+    Student student = new Student();
+    student.setId(123L);
+    student.setName("検索太郎");
+
+    StudentCourse course = new StudentCourse();
+    course.setCourseName("Java");
+
+    List<StudentCourse> courseList = List.of(course);
+
+    Mockito.when(repository.findStudentById(id)).thenReturn(student);
+    Mockito.when(repository.searchStudentCourse(id)).thenReturn(courseList);
+
+    // 実行
+    StudentDetail result = sut.getStudentDetailById(id);
+
+    // 検証
+    verify(repository, times(1)).findStudentById(id);
+    verify(repository, times(1)).searchStudentCourse(id);
+
+    assertEquals(student, result.getStudent());
+    assertEquals(courseList, result.getStudentCourseList());
+  }
+
+
+  @Test
+  void 受講生登録_リポジトリの処理が適切に呼び出されていることのテスト() {
     // 準備
     Student student = new Student();
     student.setId(100L);
@@ -80,7 +109,7 @@ class StudentServiceTest {
   }
 
   @Test
-  void 生徒情報とコース情報が正しく更新されることのテスト() {
+  void 受講生更新_リポジトリの処理が適切に呼び出されていることのテスト() {
     // 準備
     Student student = new Student();
     student.setId(200L);
