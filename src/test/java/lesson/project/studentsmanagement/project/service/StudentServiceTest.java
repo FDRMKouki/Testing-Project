@@ -58,7 +58,6 @@ class StudentServiceTest {
   void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
     // 準備
     String id = "123";
-
     Student student = new Student();
     student.setId(123L);
     student.setName("検索太郎");
