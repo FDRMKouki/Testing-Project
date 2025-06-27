@@ -1,10 +1,11 @@
 package lesson.project.studentsmanagement.project.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
@@ -36,27 +37,20 @@ class StudentServiceTest {
 
   @Test
   void 受講生詳細一覧検索_リポジトリとコンバーターの処理が適切に呼び出されていることのテスト() {
-    //準備
     List<Student> studentList = new ArrayList<>();
     List<StudentCourse> studentCourseList = new ArrayList<>();
     Mockito.when(repository.searchStudent()).thenReturn(studentList);
     Mockito.when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
 
-    //実行
     sut.searchStudentList();
 
-    //検証
-    //Assertions.assertEquals(expected, actual);
     verify(repository, times(1)).searchStudent();
     verify(repository, times(1)).searchStudentCourseList();
     verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList);
-
-    //(あとしまつ DBを変えた時などはここで元に戻す)
   }
 
   @Test
   void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
-    // 準備
     String id = "123";
     Student student = new Student();
     student.setId(123L);
@@ -70,24 +64,20 @@ class StudentServiceTest {
     Mockito.when(repository.findStudentById(id)).thenReturn(student);
     Mockito.when(repository.searchStudentCourse(id)).thenReturn(courseList);
 
-    // 実行
     StudentDetail result = sut.getStudentDetailById(id);
 
-    // 検証
     verify(repository, times(1)).findStudentById(id);
     verify(repository, times(1)).searchStudentCourse(id);
 
-    assertEquals(student, result.getStudent());
-    assertEquals(courseList, result.getStudentCourseList());
+    assertThat(result.getStudent()).isEqualTo(student);
+    assertThat(result.getStudentCourseList()).isEqualTo(courseList);
   }
-
 
   @Test
   void 受講生登録_リポジトリの処理が適切に呼び出されていることのテスト() {
-    // 準備
     Student student = new Student();
     student.setId(100L);
-    student.setName("テスト太郎");
+    student.setName("登録太郎");
 
     StudentCourse course = new StudentCourse();
     course.setCourseName("Java");
@@ -95,21 +85,19 @@ class StudentServiceTest {
     List<StudentCourse> courseList = List.of(course);
     StudentDetail detail = new StudentDetail(student, courseList);
 
-    // repository.registerStudentでIDがセットされたと仮定
-    // ※voidメソッドなのでMockito.doNothing()は不要
-
-    // 実行
     StudentDetail result = sut.registerStudent(detail);
 
-    // 検証
     verify(repository, times(1)).registerStudent(student);
     verify(repository, times(1)).registerStudentCourse(Mockito.any(StudentCourse.class));
-    assertEquals(detail, result);
+
+    assertThat(result).isEqualTo(detail);
+    assertThat(course.getStartDatetimeAt().getHour()).isEqualTo(LocalDateTime.now().getHour());
+    assertThat(course.getPredictedCompleteDatetimeAt().getYear())
+        .isEqualTo(LocalDateTime.now().plusYears(1).getYear());
   }
 
   @Test
   void 受講生更新_リポジトリの処理が適切に呼び出されていることのテスト() {
-    // 準備
     Student student = new Student();
     student.setId(200L);
     student.setName("変更太郎");
@@ -119,23 +107,17 @@ class StudentServiceTest {
 
     StudentDetail detail = new StudentDetail(student, List.of(course));
 
-    // 実行
     sut.updateStudent(detail);
 
-    // 検証
     verify(repository, times(1)).updateStudent(student);
     verify(repository, times(1)).updateStudentCourse(course);
   }
 
   @Test
   void 生徒IDがnullのときIllegalArgumentExceptionがスローされることのテスト() {
-    // 準備
     Student student = new Student();  // ID未設定(ID=null)
     StudentDetail detail = new StudentDetail(student, List.of());
 
-    // 実行、検証
     assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
   }
-
-
 }
