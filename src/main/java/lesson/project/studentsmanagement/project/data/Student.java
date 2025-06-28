@@ -14,7 +14,9 @@ import lombok.Setter;
 public class Student {
 
   @NotNull(message = "IDは必須です")
+  //@NotBlank使用禁止！！！
   private Long id; // ← String → Long に変更
+
   @NotBlank(message = "名前は空白にできません")
   private String name;
 

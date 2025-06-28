@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
 
+  //TODO:久々にPostmanで登録時のjson送ったらコイツが出た 修正して
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("入力値が不正です");
