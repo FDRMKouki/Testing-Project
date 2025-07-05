@@ -1,6 +1,7 @@
 package lesson.project.studentsmanagement.project.handler;
 
 import jakarta.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.exception.StudentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
 
+  //TODO:久々にPostmanで登録時のjson送ったらコイツが出た 修正して
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("入力値が不正です");
+    String errorMessages = ex.getBindingResult().getFieldErrors().stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .collect(Collectors.joining(", "));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("入力値が不正です: " + errorMessages);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)

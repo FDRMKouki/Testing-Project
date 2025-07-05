@@ -112,10 +112,16 @@ public class StudentController {
    */
   @Operation(summary = "受講生更新", description = "特定のIDの受講生詳細を更新する。")
   @PutMapping("/updateStudent")
-  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
-    service.updateStudent(studentDetail);
-    logger.info("ID {} が更新されました", studentDetail.getStudent().getId());
-    return ResponseEntity.ok("こうしんしょりせいこおお");
+  public ResponseEntity<StudentDetail> updateStudent(@RequestBody StudentDetail studentDetail) {
+    if (studentDetail.getStudent() == null || studentDetail.getStudent().getId() == null) {
+      throw new IllegalArgumentException("IDは必須です。");
+    } else {
+      service.updateStudent(studentDetail);
+      logger.info("ID {} が更新されました", studentDetail.getStudent().getId());
+      StudentDetail updated = service.getStudentDetailById(
+          studentDetail.getStudent().getId().toString());
+      return ResponseEntity.ok(updated);
+    }
   }
 
   // ----------- Delete -----------
@@ -128,10 +134,14 @@ public class StudentController {
    */
   @Operation(summary = "受講生削除", description = "特定のIDの受講生を削除する。")
   @PutMapping("/deleteStudent")
-  public ResponseEntity<String> deleteStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> deleteStudent(@RequestBody StudentDetail studentDetail) {
     service.logicalDeleteStudent(studentDetail.getStudent());
-    logger.info("削除された生徒ID: {}", studentDetail.getStudent().getId());
-    return ResponseEntity.ok("さくじょしょりせいこう");
+    Long id = studentDetail.getStudent().getId();
+    logger.info("削除された生徒ID: {}", id);
+
+    // 削除直後の状態を取得して返す（is_deleted=true）
+    StudentDetail deleted = service.getStudentDetailById(id.toString());
+    return ResponseEntity.ok(deleted);
   }
 
 }
