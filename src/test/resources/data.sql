@@ -6,6 +6,7 @@ INSERT INTO students (  id, name, furigana, nickname, mail_address, region, age,
 (  4, 'Galum', 'Gallium', 'Ga', 'galum@example', 'e', 16, 'female', 'galumnoremark', 0),
 (  5, 'Azns', 'Azens', 'As', 'azns@example', 'swe', 17, 'female', 'aznsnoremark', 0),
 (  6, 'Im not here,', 'None', 'None', 'none@example', 'None', 0, 'None', 'This student is deleted', 1);
+--どうやらH2側では自動採番がまた1からになるようなので
 ALTER TABLE students ALTER COLUMN id RESTART WITH 7;
 --受講生コース
 INSERT INTO students_courses ( id, student_id, course_name, start_datetime_at, predicted_complete_datetime_at) VALUES
@@ -16,3 +17,5 @@ INSERT INTO students_courses ( id, student_id, course_name, start_datetime_at, p
 (5, 4, 'Java', '2025-01-01 10:00:00', '2025-03-30 18:00:00'),
 (6, 5, 'Art', '2025-10-01 10:00:00', '2025-12-30 18:00:00'),
 (7, 5, 'Java', '2025-12-01 10:00:00', '2025-01-30 18:00:00');
+--理由上に同じ
+ALTER TABLE students_courses ALTER COLUMN id RESTART WITH 8;
