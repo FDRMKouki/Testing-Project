@@ -1,7 +1,6 @@
 package lesson.project.studentsmanagement.project.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,10 +9,13 @@ import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.exception.TestException;
 import lesson.project.studentsmanagement.project.log.PrintLogs;
 import lesson.project.studentsmanagement.project.service.StudentService;
+import lesson.project.studentsmanagement.project.validation.CreateGroup;
+import lesson.project.studentsmanagement.project.validation.UpdateGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +49,7 @@ public class StudentController {
   @Operation(summary = "受講生登録", description = "受講生を登録する。")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(
-      @RequestBody @Valid StudentDetail studentDetail) {
+      @RequestBody @Validated(CreateGroup.class) StudentDetail studentDetail) {
     logger.info("POSTされた studentDetail: {}", studentDetail);
     StudentDetail registered = service.registerStudent(studentDetail);
     logger.info("作成された生徒:");
@@ -112,7 +114,8 @@ public class StudentController {
    */
   @Operation(summary = "受講生更新", description = "特定のIDの受講生詳細を更新する。")
   @PutMapping("/updateStudent")
-  public ResponseEntity<StudentDetail> updateStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> updateStudent(
+      @RequestBody @Validated(UpdateGroup.class) StudentDetail studentDetail) {
     if (studentDetail.getStudent() == null || studentDetail.getStudent().getId() == null) {
       throw new IllegalArgumentException("IDは必須です。");
     } else {
