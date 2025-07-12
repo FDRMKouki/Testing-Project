@@ -2,6 +2,7 @@ package lesson.project.studentsmanagement.project.data;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class Student {
 
-  //@NotNull(message = "IDは必須です")
+  @NotNull(message = "IDは必須です")
   //@NotBlank使用禁止！！！
   private Long id; // ← String → Long に変更
 
