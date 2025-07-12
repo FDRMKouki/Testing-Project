@@ -16,6 +16,7 @@ import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.service.StudentService;
+import lesson.project.studentsmanagement.project.validation.UpdateGroup;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ class StudentControllerTest {
     student.setRegion("不明県");
     student.setGender("Who said the name Taro is always man's name?");
 
-    Set<ConstraintViolation<Student>> violations = validator.validate(student);
+    Set<ConstraintViolation<Student>> violations = validator.validate(student, UpdateGroup.class);
 
     //正常に入力したならそりゃエラー出ないでしょ
     assertThat(violations.size()).isEqualTo(0);
@@ -72,7 +73,7 @@ class StudentControllerTest {
     student.setRegion("不明県");
     student.setGender("Who said the name Taro is always man's name?");
 
-    Set<ConstraintViolation<Student>> violations = validator.validate(student);
+    Set<ConstraintViolation<Student>> violations = validator.validate(student, UpdateGroup.class);
 
     //Studentの値のうちIDに関するテストなので 1つだけ問題を取得するように
     assertThat(violations.size()).isEqualTo(1);
@@ -90,7 +91,8 @@ class StudentControllerTest {
 
     StudentDetail detail = new StudentDetail(student, List.of(course));
 
-    Set<ConstraintViolation<StudentDetail>> violations = validator.validate(detail);
+    Set<ConstraintViolation<StudentDetail>> violations = validator.validate(detail,
+        UpdateGroup.class);
 
     // 検証：ネストされたオブジェクトでもエラーが検出される
     assertThat(violations).isNotEmpty();
@@ -218,7 +220,13 @@ class StudentControllerTest {
         {
           "student": {
             "id": 1,
-            "name": "更新太郎"
+            "name": "更新太郎",
+            "furigana": "コウシンタロウ",
+            "nickname": "こうたろ",
+            "mailAddress": "koushin@example.com",
+            "region": "大阪",
+            "gender": "男性",
+            "age": 30
           },
           "studentCourseList": []
         }
