@@ -9,13 +9,13 @@ INSERT INTO students (  id, name, furigana, nickname, mail_address, region, age,
 --どうやらH2側では自動採番がまた1からになるようなので
 ALTER TABLE students ALTER COLUMN id RESTART WITH 7;
 --受講生コース
-INSERT INTO students_courses ( id, student_id, course_name, start_datetime_at, predicted_complete_datetime_at) VALUES
+INSERT INTO students_courses (id, student_id, course_name, start_datetime_at, predicted_complete_datetime_at) VALUES
 (1, 1, 'Java', '2025-04-01 10:00:00', '2025-06-30 18:00:00'),
 (2, 2, 'Art', '2025-03-01 10:00:00', '2025-05-30 18:00:00'),
 (3, 3, 'Art', '2025-06-01 10:00:00', '2025-08-30 18:00:00'),
 (4, 3, 'AWS', '2025-07-01 10:00:00', '2025-09-30 18:00:00'),
 (5, 4, 'Java', '2025-01-01 10:00:00', '2025-03-30 18:00:00'),
 (6, 5, 'Art', '2025-10-01 10:00:00', '2025-12-30 18:00:00'),
-(7, 5, 'Java', '2025-12-01 10:00:00', '2025-01-30 18:00:00');
+(7, 5, 'Java', '2025-12-01 10:00:00', '2026-01-30 18:00:00');
 --理由上に同じ
 ALTER TABLE students_courses ALTER COLUMN id RESTART WITH 8;

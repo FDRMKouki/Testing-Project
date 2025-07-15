@@ -51,13 +51,18 @@ class StudentServiceTest {
 
   @Test
   void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
-    String id = "123";
-    Student student = new Student();
-    student.setId(123L);
-    student.setName("検索太郎");
+    String id = "123";//対象の生徒のID
 
-    StudentCourse course = new StudentCourse();
-    course.setCourseName("Java");
+    Student student = new Student(
+        123L, "検索太郎", "ケンサクタロウ", "けんたろ",
+        "kensaku@example.com", "東京", 22, "男性", "備考", false
+    );
+
+    StudentCourse course = new StudentCourse(
+        123L, "Java",
+        LocalDateTime.of(2025, 7, 1, 10, 0),
+        LocalDateTime.of(2025, 9, 1, 18, 0)
+    );
 
     List<StudentCourse> courseList = List.of(course);
 
@@ -75,12 +80,16 @@ class StudentServiceTest {
 
   @Test
   void 受講生登録_リポジトリの処理が適切に呼び出されていることのテスト() {
-    Student student = new Student();
-    student.setId(100L);
-    student.setName("登録太郎");
+    Student student = new Student(
+        100L, "登録太郎", "トウロクタロウ", "とろたろ",
+        "taro@example.com", "東京", 25, "男性", "登録用メモ", false
+    );
 
-    StudentCourse course = new StudentCourse();
-    course.setCourseName("Java");
+    LocalDateTime now = LocalDateTime.now();
+
+    StudentCourse course = new StudentCourse(
+        100L, "Java", now, now.plusYears(1)
+    );
 
     List<StudentCourse> courseList = List.of(course);
     StudentDetail detail = new StudentDetail(student, courseList);
@@ -98,12 +107,16 @@ class StudentServiceTest {
 
   @Test
   void 受講生更新_リポジトリの処理が適切に呼び出されていることのテスト() {
-    Student student = new Student();
-    student.setId(200L);
-    student.setName("変更太郎");
+    Student student = new Student(
+        200L, "変更太郎", "ヘンコウタロウ", "へんたろ",
+        "change@example.com", "大阪", 30, "男性", "更新メモ", false
+    );
 
-    StudentCourse course = new StudentCourse();
-    course.setCourseName("変更後Java");
+    StudentCourse course = new StudentCourse(
+        200L, "変更後Java",
+        LocalDateTime.of(2025, 8, 1, 9, 0),
+        LocalDateTime.of(2025, 10, 31, 18, 0)
+    );
 
     StudentDetail detail = new StudentDetail(student, List.of(course));
 
@@ -115,7 +128,10 @@ class StudentServiceTest {
 
   @Test
   void 生徒IDがnullのときIllegalArgumentExceptionがスローされることのテスト() {
-    Student student = new Student();  // ID未設定(ID=null)
+    Student student = new Student(
+        null, "名無し", "ナナシ", "ななし",
+        "none@example.com", "不明", 0, "不明", "エラー用", false
+    ); // ID未設定(ID=null)
     StudentDetail detail = new StudentDetail(student, List.of());
 
     assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));

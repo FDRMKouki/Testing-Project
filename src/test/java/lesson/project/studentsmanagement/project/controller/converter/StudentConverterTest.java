@@ -21,13 +21,8 @@ class StudentConverterTest {
   @Test
   void 論理削除されていない生徒のみが変換されることのテスト() {
     // Arrange
-    Student activeStudent = new Student();
-    activeStudent.setId(1L);
-    activeStudent.setDeleted(false);
-
-    Student deletedStudent = new Student();
-    deletedStudent.setId(2L);
-    deletedStudent.setDeleted(true);
+    Student activeStudent = new Student(1L, null, null, null, null, null, 0, null, null, false);
+    Student deletedStudent = new Student(2L, null, null, null, null, null, 0, null, null, true);
 
     List<Student> studentList = List.of(activeStudent, deletedStudent);
     List<StudentCourse> courseList = List.of(); // courseは今回不要
@@ -43,20 +38,10 @@ class StudentConverterTest {
   @Test
   void 生徒に紐づくコースが正しく変換されていることのテスト() {
     // Arrange
-    Student student = new Student();
-    student.setId(1L);
-    student.setDeleted(false);
-
-    StudentCourse course1 = new StudentCourse();
-    course1.setStudentId(1L);
-    course1.setCourseName("Java");
-
-    StudentCourse course2 = new StudentCourse();
-    course2.setStudentId(1L);
-    course2.setCourseName("Spring");
-
-    StudentCourse unrelatedCourse = new StudentCourse();
-    unrelatedCourse.setStudentId(2L); // 別人のコース
+    Student student = new Student(1L, null, null, null, null, null, 0, null, null, false);
+    StudentCourse course1 = new StudentCourse(1L, "Java", null, null);
+    StudentCourse course2 = new StudentCourse(1L, "Spring", null, null);
+    StudentCourse unrelatedCourse = new StudentCourse(2L, "Java", null, null);// 別人のコース
 
     List<Student> studentList = List.of(student);
     List<StudentCourse> courseList = List.of(course1, course2, unrelatedCourse);
@@ -76,9 +61,7 @@ class StudentConverterTest {
   @Test
   void コースが存在しない場合でも空リストが設定されることのテスト() {
     // Arrange
-    Student student = new Student();
-    student.setId(1L);
-    student.setDeleted(false);
+    Student student = new Student(1L, null, null, null, null, null, 0, null, null, false);
 
     List<Student> studentList = List.of(student);
     List<StudentCourse> emptyCourseList = List.of(); // コースなし

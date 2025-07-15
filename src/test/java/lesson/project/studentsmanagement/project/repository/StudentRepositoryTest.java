@@ -19,16 +19,18 @@ class StudentRepositoryTest {
   // ----------- Create -----------
   @Test
   void 受講生が登録できることのテスト() {
-    Student student = new Student();
-    student.setName("登録太郎");
-    student.setFurigana("トウロクタロウ");
-    student.setNickname("とろたろ");
-    student.setMailAddress("taro@example.com");
-    student.setRegion("関東");
-    student.setAge(25);
-    student.setGender("male");
-    student.setRemark("テスト登録");
-    student.setDeleted(false);
+    Student student = new Student(
+        null,                    // ID は登録時 null
+        "登録太郎",
+        "トウロクタロウ",
+        "とろたろ",
+        "taro@example.com",
+        "関東",
+        25,
+        "male",
+        "テスト登録",
+        false
+    );
     sut.registerStudent(student);
     //リポとうろくはvoidで返しがない=継承できない ので増加後のリストを取得させる作戦 論理削除されてない受講生を読み取ることに注意
     List<Student> actual = sut.searchStudent();
@@ -39,23 +41,29 @@ class StudentRepositoryTest {
         .findFirst()
         .orElseThrow(() -> new AssertionError("登録した生徒が見つかりません"));
 
-    // 登録した内容の検証
-    assertThat(inserted.getFurigana()).isEqualTo("トウロクタロウ");
-    assertThat(inserted.getNickname()).isEqualTo("とろたろ");
-    assertThat(inserted.getMailAddress()).isEqualTo("taro@example.com");
-    assertThat(inserted.getRegion()).isEqualTo("関東");
-    assertThat(inserted.getAge()).isEqualTo(25);
-    assertThat(inserted.getGender()).isEqualTo("male");
-    assertThat(inserted.getRemark()).isEqualTo("テスト登録");
+    // 登録した内容の検証 コンストラクタを使うとassertThatが一つで済む
+    assertThat(inserted).isEqualTo(new Student(
+        inserted.getId(), // 自動採番されたIDを利用
+        "登録太郎",
+        "トウロクタロウ",
+        "とろたろ",
+        "taro@example.com",
+        "関東",
+        25,
+        "male",
+        "テスト登録",
+        false
+    ));
   }
 
   @Test
   void コースが登録できることのテスト() {
-    StudentCourse course = new StudentCourse();
-    course.setStudentId(2L); //結びつく生徒IDであって、コースのIDではない
-    course.setCourseName("Javava");
-    course.setStartDatetimeAt(LocalDateTime.of(2025, 7, 1, 10, 0));
-    course.setPredictedCompleteDatetimeAt(LocalDateTime.of(2025, 9, 30, 18, 0));
+    StudentCourse course = new StudentCourse(
+        2L,//結びつく生徒IDであって、コースのIDではない
+        "Javava",
+        LocalDateTime.of(2025, 7, 1, 10, 0),
+        LocalDateTime.of(2025, 9, 30, 18, 0)
+    );
     sut.registerStudentCourse(course);
     // 検証：登録後のリストを取得
     List<StudentCourse> actual = sut.searchStudentCourseList();
@@ -69,9 +77,7 @@ class StudentRepositoryTest {
         .findFirst()
         .orElseThrow(() -> new AssertionError("登録したコースが見つかりません"));
 
-    assertThat(inserted.getStartDatetimeAt()).isEqualTo(LocalDateTime.of(2025, 7, 1, 10, 0));
-    assertThat(inserted.getPredictedCompleteDatetimeAt()).isEqualTo(
-        LocalDateTime.of(2025, 9, 30, 18, 0));
+    assertThat(inserted).isEqualTo(course);
   }
 
   // ----------- Read -----------
@@ -92,17 +98,18 @@ class StudentRepositoryTest {
   @Test
   void ID指定で生徒を取得できることのテスト() {
     //data.sqlの奴と同じ
-    Student expected = new Student();
-    expected.setId(2L);
-    expected.setName("Slco");
-    expected.setFurigana("Silico");
-    expected.setNickname("Si");
-    expected.setMailAddress("slco@example");
-    expected.setRegion("here");
-    expected.setAge(20);
-    expected.setGender("female");
-    expected.setRemark("slconoremark");
-    expected.setDeleted(false);
+    Student expected = new Student(
+        2L,
+        "Slco",
+        "Silico",
+        "Si",
+        "slco@example",
+        "here",
+        20,
+        "female",
+        "slconoremark",
+        false
+    );
 
     // 実際に取得
     Student actual = sut.findStudentById("2");
