@@ -146,8 +146,22 @@ class StudentRepositoryTest {
     student.setName("ダイヤ更新済み");
     sut.updateStudent(student);
 
-    Student updated = sut.findStudentById("1");
-    assertThat(updated.getName()).isEqualTo("ダイヤ更新済み");
+    Student actual = sut.findStudentById("1");
+
+    Student expected = new Student(
+        1L,
+        "ダイヤ更新済み",
+        "Carbn",
+        "C",
+        "cabn@example",
+        "everywhere",
+        20,
+        "male",
+        "cabnnoremark",
+        false
+    );
+
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -157,8 +171,16 @@ class StudentRepositoryTest {
     course.setCourseName("更新Java");
     sut.updateStudentCourse(course);
 
-    List<StudentCourse> updatedCourses = sut.searchStudentCourse("1");
-    assertThat(updatedCourses.get(0).getCourseName()).isEqualTo("更新Java");
+    List<StudentCourse> actual = sut.searchStudentCourse("1");
+
+    StudentCourse expected = new StudentCourse(
+        1L,
+        "更新Java",
+        LocalDateTime.of(2025, 4, 1, 10, 0),
+        LocalDateTime.of(2025, 6, 30, 18, 0)
+    );
+    // IDは比較に含めないようequals()を定義していればOK
+    assertThat(actual).contains(expected);
   }
 
   // ----------- Delete -----------
@@ -169,10 +191,20 @@ class StudentRepositoryTest {
     sut.logicalDeleteStudent(student);
 
     List<Student> students = sut.searchStudent();
-    // ID=1が論理削除されたため4人になるはず
     assertThat(students.size()).isEqualTo(4);
-    // 確認としても、削除された生徒の is_deleted フラグも見てみる
+
     Student deletedStudent = sut.findStudentById("1");
-    assertThat(deletedStudent).isNotNull();
+    assertThat(deletedStudent).isEqualTo(new Student(
+        1L,
+        "Cabn",
+        "Carbn",
+        "C",
+        "cabn@example",
+        "everywhere",
+        20,
+        "male",
+        "cabnnoremark",
+        true  // ← isDeleted が true に変化している
+    ));
   }
 }
