@@ -14,7 +14,6 @@ import lombok.Setter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class StudentCourse {
 
-  @EqualsAndHashCode.Include
   private Long id; // ← String → Long に変更
 
   @EqualsAndHashCode.Include

@@ -121,10 +121,21 @@ class StudentRepositoryTest {
   @Test
   void 生徒IDに紐づくコース情報が取得できることのテスト() {
     //Pは2つもコースがある
-    List<StudentCourse> courses = sut.searchStudentCourse("3");
-    assertThat(courses.size()).isEqualTo(2);
-    assertThat(courses.get(0).getCourseName()).isEqualTo("Art");
-    assertThat(courses.get(1).getCourseName()).isEqualTo("AWS");
+    List<StudentCourse> actual = sut.searchStudentCourse("3");
+
+    StudentCourse expected1 = new StudentCourse(
+        3L, "Art",
+        LocalDateTime.of(2025, 6, 1, 10, 0),
+        LocalDateTime.of(2025, 8, 30, 18, 0)
+    );
+
+    StudentCourse expected2 = new StudentCourse(
+        3L, "AWS",
+        LocalDateTime.of(2025, 7, 1, 10, 0),
+        LocalDateTime.of(2025, 9, 30, 18, 0)
+    );
+
+    assertThat(actual).contains(expected1, expected2);
   }
 
   // ----------- Update -----------
