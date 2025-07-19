@@ -10,12 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.service.StudentService;
+import lesson.project.studentsmanagement.project.validation.UpdateGroup;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -44,17 +46,14 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の受講生で適切な値を入力したときに入力チェックに異常が発生しないことのテスト() {
-    Student student = new Student();
-    student.setId(123214L);
-    student.setName("のっとてきせつ太郎");
-    student.setFurigana("ノットテキセツタロウ");
-    student.setNickname("適切でないIDを持ってる人");
-    student.setAge(20);
-    student.setMailAddress("shiruka@example");
-    student.setRegion("不明県");
-    student.setGender("Who said the name Taro is always man's name?");
+    Student student = new Student(
+        123214L, "のっとてきせつ太郎", "ノットテキセツタロウ", "適切でないIDを持ってる人",
+        "shiruka@example", "不明県", 20,
+        "Who said the name Taro is always man's name?",
+        null, false
+    );
 
-    Set<ConstraintViolation<Student>> violations = validator.validate(student);
+    Set<ConstraintViolation<Student>> violations = validator.validate(student, UpdateGroup.class);
 
     //正常に入力したならそりゃエラー出ないでしょ
     assertThat(violations.size()).isEqualTo(0);
@@ -62,17 +61,14 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の受講生でIDに数字以外を用いた時に入力チェックに引っかかることのテスト() {
-    Student student = new Student();
-    student.setId(null);
-    student.setName("のっとてきせつ太郎");
-    student.setFurigana("ノットテキセツタロウ");
-    student.setNickname("適切でないIDを持ってる人");
-    student.setAge(20);
-    student.setMailAddress("shiruka@example");
-    student.setRegion("不明県");
-    student.setGender("Who said the name Taro is always man's name?");
+    Student student = new Student(
+        null, "のっとてきせつ太郎", "ノットテキセツタロウ", "適切でないIDを持ってる人",
+        "shiruka@example", "不明県", 20,
+        "Who said the name Taro is always man's name?",
+        null, false//必要な時123214Lにする(かも)
+    );
 
-    Set<ConstraintViolation<Student>> violations = validator.validate(student);
+    Set<ConstraintViolation<Student>> violations = validator.validate(student, UpdateGroup.class);
 
     //Studentの値のうちIDに関するテストなので 1つだけ問題を取得するように
     assertThat(violations.size()).isEqualTo(1);
@@ -82,15 +78,13 @@ class StudentControllerTest {
 
   @Test
   void StudentDetailのバリデーション_StudentとCourseの必須項目が不足していたらエラーが出ることのテスト() {
-    // 必須項目が未設定の Student
-    Student student = new Student();
-
-    // 必須項目が未設定の StudentCourse
-    StudentCourse course = new StudentCourse();
-
+    Student student = new Student(null, null, null, null, null, null, 0, null, null,
+        false); // 空のコンストラクタ
+    StudentCourse course = new StudentCourse(null, null, null, null); // 空のコンストラクタ
     StudentDetail detail = new StudentDetail(student, List.of(course));
 
-    Set<ConstraintViolation<StudentDetail>> violations = validator.validate(detail);
+    Set<ConstraintViolation<StudentDetail>> violations = validator.validate(detail,
+        UpdateGroup.class);
 
     // 検証：ネストされたオブジェクトでもエラーが検出される
     assertThat(violations).isNotEmpty();
@@ -117,9 +111,11 @@ class StudentControllerTest {
   @Test
   void 特定IDの受講生詳細が取得できることのテスト() throws Exception {
     String id = "123";
-    Student student = new Student();
-    student.setId(123L);
-    student.setName("詳細太郎");
+    Student student = new Student(
+        123L, "詳細太郎", "ショウサイタロウ", "しょうたろ",
+        "taro@example.com", "東京", 21,
+        "男性", null, false
+    );
     StudentDetail detail = new StudentDetail(student, List.of());
 
     Mockito.when(service.getStudentDetailById(id)).thenReturn(detail);
@@ -132,22 +128,20 @@ class StudentControllerTest {
   void 特定IDの受講生詳細と受講コースリストが取得できることのテスト() throws Exception {
     String id = "123";
 
-    // Student 作成
-    Student student = new Student();
-    student.setId(123L);
-    student.setName("詳細太郎");
-    student.setFurigana("ショウサイタロウ");
-    student.setNickname("しょうたろ");
-    student.setAge(21);
-    student.setMailAddress("taro@example.com");
-    student.setRegion("東京");
-    student.setGender("男性");
+    Student student = new Student(
+        123L, "詳細太郎", "ショウサイタロウ", "しょうたろ",
+        "taro@example.com", "東京", 21,
+        "男性", null, false
+    );
 
-    // StudentCourse 作成
-    StudentCourse course1 = new StudentCourse();
-    course1.setCourseName("Java");
-    StudentCourse course2 = new StudentCourse();
-    course2.setCourseName("Spring Boot");
+    StudentCourse course1 = new StudentCourse(123L, "Java",
+        LocalDateTime.of(2025, 7, 1, 10, 0),
+        LocalDateTime.of(2025, 9, 1, 18, 0)
+    );
+    StudentCourse course2 = new StudentCourse(123L, "Spring Boot",
+        LocalDateTime.of(2025, 7, 2, 10, 0),
+        LocalDateTime.of(2025, 9, 2, 18, 0)
+    );
 
     // StudentDetail にセット
     StudentDetail detail = new StudentDetail(student, List.of(course1, course2));
@@ -169,10 +163,11 @@ class StudentControllerTest {
 
   @Test
   void 受講生登録のPOSTがRESTAPIとして動作し200が返ることのテスト() throws Exception {
-    Student student = new Student();
-    student.setId(1L);
-    student.setName("新規太郎");
-
+    Student student = new Student(
+        1L, "新規太郎", "シンキタロウ", "しんたろ",
+        "taro@example.com", "東京", 25,
+        "男性", null, false
+    );
     StudentDetail detail = new StudentDetail(student, List.of());
 
     Mockito.when(service.registerStudent(Mockito.any(StudentDetail.class)))
@@ -208,9 +203,11 @@ class StudentControllerTest {
 
   @Test
   void PUTで受講生情報が更新できることのテスト() throws Exception {
-    Student student = new Student();
-    student.setId(1L);
-    student.setName("更新太郎");
+    Student student = new Student(
+        1L, "更新太郎", "コウシンタロウ", "こうたろ",
+        "koushin@example.com", "大阪", 30,
+        "男性", null, false
+    );
 
     StudentDetail detail = new StudentDetail(student, List.of());
 
@@ -218,7 +215,13 @@ class StudentControllerTest {
         {
           "student": {
             "id": 1,
-            "name": "更新太郎"
+            "name": "更新太郎",
+            "furigana": "コウシンタロウ",
+            "nickname": "こうたろ",
+            "mailAddress": "koushin@example.com",
+            "region": "大阪",
+            "gender": "男性",
+            "age": 30
           },
           "studentCourseList": []
         }

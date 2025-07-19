@@ -27,8 +27,7 @@
     SELECT * FROM students WHERE is_deleted = 0
   </select>
   <!--全てのコース情報を取得する。-->
-  <select id="searchStudentCourseList"
-    resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
+  <select id="searchStudentCourseList" resultMap="StudentCourseResultMap">
     SELECT * FROM students_courses
   </select>
   <!--指定IDの生徒を取得する。-->
@@ -66,5 +65,13 @@
   <update id="logicalDeleteStudent">
     UPDATE students SET is_deleted = 1 WHERE id = #{id}
   </update>
+  <resultMap id="StudentCourseResultMap"
+    type="lesson.project.studentsmanagement.project.data.StudentCourse">
+    <id property="id" column="id"/>
+    <result property="studentId" column="student_id"/>
+    <result property="courseName" column="course_name"/>
+    <result property="startDatetimeAt" column="start_datetime_at"/>
+    <result property="predictedCompleteDatetimeAt" column="predicted_complete_datetime_at"/>
+  </resultMap>
 
 </mapper>
