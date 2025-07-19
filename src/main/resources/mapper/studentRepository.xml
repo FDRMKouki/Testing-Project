@@ -21,6 +21,12 @@
     #{studentId}, #{courseName}, #{startDatetimeAt}, #{predictedCompleteDatetimeAt}
     )
   </insert>
+  <!--コース申込状況を登録する（IDは自動採番）。-->
+  <insert id="insertCourseStatus" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO courses_status (course_id, app_status)
+    VALUES (#{courseId}, #{appStatus})
+  </insert>
+
   <!--Read-->
   <!--論理削除されていない全生徒を取得する。-->
   <select id="searchStudent" resultType="lesson.project.studentsmanagement.project.data.Student">
@@ -39,6 +45,13 @@
     resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
+  <!--指定コースIDに紐づく申込状況を取得する。-->
+  <select id="findStatusByCourseId"
+    resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
+    SELECT * FROM courses_status
+    WHERE course_id = #{courseId}
+  </select>
+
   <!--Update-->
   <!--生徒情報を更新する。-->
   <update id="updateStudent">
@@ -60,6 +73,13 @@
     course_name = #{courseName}
     WHERE id = #{id}
   </update>
+  <!--コース申込状況の更新。 状況のみ更新する。-->
+  <update id="updateCourseStatus">
+    UPDATE courses_status
+    SET app_status = #{newStatus}
+    WHERE course_id = #{courseId}
+  </update>
+
   <!--Delete-->
   <!--指定IDの生徒を論理削除する（is_deleted = 1）。-->
   <update id="logicalDeleteStudent">

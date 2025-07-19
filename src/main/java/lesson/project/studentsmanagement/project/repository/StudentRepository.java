@@ -1,10 +1,12 @@
 package lesson.project.studentsmanagement.project.repository;
 
 import java.util.List;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 生徒・コース情報に対するDB操作（登録・検索・更新・削除）を担当するリポジトリ。
@@ -29,6 +31,13 @@ public interface StudentRepository {
    */
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * コース申込状況を登録する（IDは自動採番）。
+   *
+   * @param status 登録する申込状況
+   */
+  void insertCourseStatus(CourseStatus status);
 
   // ----------- Read -----------
 
@@ -78,6 +87,14 @@ public interface StudentRepository {
    * @param studentCourse 更新後のコース情報
    */
   void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * コース申込状況の更新。 状況のみ更新する。
+   *
+   * @param courseId  コースID
+   * @param appStatus 新しい申込ステータス
+   */
+  void updateCourseStatus(@Param("courseId") String courseId, @Param("appStatus") int appStatus);
 
   // ----------- Delete -----------
 

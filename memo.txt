@@ -29,6 +29,16 @@ predicted_complete_datetime_at:timestamp
 create table students_courses(id varchar(36),student_id varchar(36),
 course_name varchar(50),start_datetime_at datetime,predicted_complete_datetime_at datetime) default charset='utf8';
 
+#----------------
+courses_status
+#----------------
+id:varchar36 primary key
+course_id:varchar36
+app_status:varchar4
+
+create table courses_status(id int AUTO_INCREMENT PRIMARY KEY NOT NULL,course_id varchar(36),app_status varchar(4)) default charset='utf8';
+
+
 EXAMPLE COMMANDS
 INSERT students values(id,'Kozki','Kozuki','MRDF','1','nowhere',18,'male','kozkinoremark',0);
 
@@ -54,24 +64,8 @@ INSERT students_courses values(id,'','Java','2100-01-04','2100-12-28');
 
 INSERT students_courses values(id,'','Art','2100-01-05','2100-12-27');
 
-
-
-
-
-
-
-こじんめも
-Unsupported class file major version 65
-
-A problem occurred configuring root project 'First Mod'.
-> Could not open cp_proj generic class cache for build file 'C:\Users\OWNER\OneDrive\MinecraftMod\First Mod\build.gradle' (C:\Users\OWNER\.gradle\caches\8.1.1\scripts\78a58cdguav6by0g67t6stfou).
- >BUG! exception in phase 'semantic analysis' in source unit '_BuildScript_' Unsupported class file major version 65
-
-21 Oracle OpenJDK version 21.0.6
-
-シェルスクリプトを導入する
-https://www.daily-trial.com/java/
-
+自動採番リセット
+alter table students auto_increment = 1;
 
 下記のサイトに関してテストをしたほうが良いこと
 https://triangle-demo-c574e.web.app/
@@ -93,8 +87,14 @@ A辺の長さ=1 B辺の長さ=2 C辺の長さ=5 (a+b>cが成り立たない例)�
 
 
 55回目の課題でやるべきこと:
-Todo:検索条件を付けた受講生検索は、どのような条件を設定できるようにするとよいか(例:名前に「太郎」が含まれるなど)を講師に聞いておくこと
+Todo:検索条件を付けた受講生検索は、どのような条件を設定できるようにするとよいか(例:名前に「太郎」が含まれるなど)を講師に聞いておくこと:付けられるようにしたい条件:
 新しくコース申し込み状況テーブル追加:カラムはid(Not null) course_id app_status(application_statusの略,申し込み状況の意)
+はじめに生徒とコースが登録されたときは申込状況は仮申込にする
+1仮申込
+2本申込
+3受講中
+4受講終了
+converterでは生徒情報と生徒コース情報,申込状況が入るように
 機能:
 各コース単位でその申請状況が取得できる機能
 TODO:受講生のコース情報の一括変更とは、対応するIDのコースに対して一度に複数のコースを一気に変更するものなのかを聞いておく

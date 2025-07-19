@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
@@ -49,6 +50,10 @@ public class StudentService {
     for (StudentCourse course : courses) {
       initStudentsCourse(course, student, now, oneYearLater);
       repository.registerStudentCourse(course);
+    }
+    for (StudentCourse course : studentDetail.getStudentCourseList()) {
+      CourseStatus status = new CourseStatus(course.getId(), 1); // 仮申込(1)
+      repository.insertCourseStatus(status);
     }
 
     return studentDetail;
@@ -103,7 +108,7 @@ public class StudentService {
       throw new StudentNotFoundException("生徒ID " + id + " は存在しません。");
     }
     List<StudentCourse> courses = repository.searchStudentCourse(id);
-    return new StudentDetail(student, courses);
+    return new StudentDetail(student, courses, courses_status);
   }
 
   // ----------- Update -----------
