@@ -1,6 +1,7 @@
 package lesson.project.studentsmanagement.project.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
@@ -53,7 +54,7 @@ public class StudentService {
     }
     for (StudentCourse course : studentDetail.getStudentCourseList()) {
       CourseStatus status = new CourseStatus(course.getId(), 1); // 仮申込(1)
-      repository.insertCourseStatus(status);
+      repository.registerCourseStatus(status);
     }
 
     return studentDetail;
@@ -93,7 +94,8 @@ public class StudentService {
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchStudent();
     List<StudentCourse> studentCoursesList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studentList, studentCoursesList);
+    List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
+    return converter.convertStudentDetails(studentList, studentCoursesList, courseStatusList);
   }
 
   /**
@@ -107,7 +109,18 @@ public class StudentService {
     if (student == null) {
       throw new StudentNotFoundException("生徒ID " + id + " は存在しません。");
     }
-    List<StudentCourse> courses = repository.searchStudentCourse(id);
+    List<StudentCourse> courses = repository.findStudentCourseByStudentId(id);
+
+    //コースの申込状況はコース情報としか結びついていないため各コースのIDと結びついた申込状況を持ってくる
+    List<CourseStatus> courses_status = new ArrayList<>();
+    for (StudentCourse course : courses) { //取得してきたコースの数だけ
+      List<CourseStatus> statusList = repository.findCourseStatusByCourseId(
+          course.getId().toString());
+      if (statusList != null && !statusList.isEmpty()) {
+        courses_status.addAll(statusList);
+      }
+    }
+
     return new StudentDetail(student, courses, courses_status);
   }
 

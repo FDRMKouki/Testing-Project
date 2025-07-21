@@ -46,11 +46,10 @@ public class StudentConverter {
             .collect(Collectors.toList());
         //CourseStatus型の変換用リスト作成。ここにIDが一致するコース情報を全て入れる
         //streamAPIを使ってstudentCourseのIDがcourseStatusのcourseIDと一致するコース情報を変換用リストに追加
-        //TODO:コイツ正確に修正
         List<CourseStatus> convertCourseStatusList = courseStatusList.stream()
             .filter(courseStatus -> convertStudentCourseList.stream()
                 .anyMatch(studentCourse -> courseStatus.getCourseId()
-                    .equals(studentCourse.getId().toString())))
+                    .equals(studentCourse.getId())))
             .collect(Collectors.toList());
 
         //全コース追加完了 studentDetailに変換用リスト内のコース情報を入れる

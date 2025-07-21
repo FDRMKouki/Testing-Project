@@ -22,7 +22,7 @@
     )
   </insert>
   <!--コース申込状況を登録する（IDは自動採番）。-->
-  <insert id="insertCourseStatus" useGeneratedKeys="true" keyProperty="id">
+  <insert id="registerCourseStatus" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO courses_status (course_id, app_status)
     VALUES (#{courseId}, #{appStatus})
   </insert>
@@ -36,20 +36,23 @@
   <select id="searchStudentCourseList" resultMap="StudentCourseResultMap">
     SELECT * FROM students_courses
   </select>
+  <!--全ての申込状況を取得する。-->
+  <select id="searchCourseStatusList" resultMap="CourseStatusResultMap">
+    SELECT * FROM courses_status
+  </select>
   <!--指定IDの生徒を取得する。-->
   <select id="findStudentById" resultType="lesson.project.studentsmanagement.project.data.Student">
     SELECT * FROM students WHERE id = #{id}
   </select>
   <!--指定生徒IDに紐づく全コース情報を取得する。-->
-  <select id="searchStudentCourse"
+  <select id="findStudentCourseByStudentId"
     resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
   <!--指定コースIDに紐づく申込状況を取得する。-->
-  <select id="findStatusByCourseId"
+  <select id="findCourseStatusByCourseId"
     resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
-    SELECT * FROM courses_status
-    WHERE course_id = #{courseId}
+    SELECT * FROM courses_status WHERE course_id = #{courseId}
   </select>
 
   <!--Update-->
@@ -85,6 +88,8 @@
   <update id="logicalDeleteStudent">
     UPDATE students SET is_deleted = 1 WHERE id = #{id}
   </update>
+
+  <!--resultMap系-->
   <resultMap id="StudentCourseResultMap"
     type="lesson.project.studentsmanagement.project.data.StudentCourse">
     <id property="id" column="id"/>
@@ -92,6 +97,12 @@
     <result property="courseName" column="course_name"/>
     <result property="startDatetimeAt" column="start_datetime_at"/>
     <result property="predictedCompleteDatetimeAt" column="predicted_complete_datetime_at"/>
+  </resultMap>
+  <resultMap id="CourseStatusResultMap"
+    type="lesson.project.studentsmanagement.project.data.CourseStatus">
+    <id property="id" column="id"/>
+    <result property="courseId" column="course_id"/>
+    <result property="appStatus" column="app_status"/>
   </resultMap>
 
 </mapper>

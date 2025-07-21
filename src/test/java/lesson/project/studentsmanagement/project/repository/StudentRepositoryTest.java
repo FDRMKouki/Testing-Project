@@ -121,7 +121,7 @@ class StudentRepositoryTest {
   @Test
   void 生徒IDに紐づくコース情報が取得できることのテスト() {
     //Pは2つもコースがある
-    List<StudentCourse> actual = sut.searchStudentCourse("3");
+    List<StudentCourse> actual = sut.findStudentCourseByStudentId("3");
 
     StudentCourse expected1 = new StudentCourse(
         3L, "Art",
@@ -166,12 +166,12 @@ class StudentRepositoryTest {
 
   @Test
   void コース情報が更新できることのテスト() {
-    List<StudentCourse> courses = sut.searchStudentCourse("1");
+    List<StudentCourse> courses = sut.findStudentCourseByStudentId("1");
     StudentCourse course = courses.get(0);
     course.setCourseName("更新Java");
     sut.updateStudentCourse(course);
 
-    List<StudentCourse> actual = sut.searchStudentCourse("1");
+    List<StudentCourse> actual = sut.findStudentCourseByStudentId("1");
 
     StudentCourse expected = new StudentCourse(
         1L,

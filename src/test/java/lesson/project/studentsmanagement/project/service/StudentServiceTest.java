@@ -67,12 +67,12 @@ class StudentServiceTest {
     List<StudentCourse> courseList = List.of(course);
 
     Mockito.when(repository.findStudentById(id)).thenReturn(student);
-    Mockito.when(repository.searchStudentCourse(id)).thenReturn(courseList);
+    Mockito.when(repository.findStudentCourseByStudentId(id)).thenReturn(courseList);
 
     StudentDetail result = sut.getStudentDetailById(id);
 
     verify(repository, times(1)).findStudentById(id);
-    verify(repository, times(1)).searchStudentCourse(id);
+    verify(repository, times(1)).findStudentCourseByStudentId(id);
 
     assertThat(result.getStudent()).isEqualTo(student);
     assertThat(result.getStudentCourseList()).isEqualTo(courseList);

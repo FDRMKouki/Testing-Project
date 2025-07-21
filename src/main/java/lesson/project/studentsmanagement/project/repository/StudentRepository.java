@@ -37,7 +37,8 @@ public interface StudentRepository {
    *
    * @param status 登録する申込状況
    */
-  void insertCourseStatus(CourseStatus status);
+  @Options(useGeneratedKeys = true, keyProperty = "id")
+  void registerCourseStatus(CourseStatus status);
 
   // ----------- Read -----------
 
@@ -57,6 +58,14 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourseList();
 
   /**
+   * 全てのコース情報を取得する。
+   *
+   * @return コースリスト
+   */
+
+  List<CourseStatus> searchCourseStatusList();
+
+  /**
    * 指定IDの生徒を取得する。
    *
    * @param id 生徒ID
@@ -70,7 +79,15 @@ public interface StudentRepository {
    * @param studentId 生徒ID
    * @return コース情報のリスト
    */
-  List<StudentCourse> searchStudentCourse(String studentId);
+  List<StudentCourse> findStudentCourseByStudentId(String studentId);
+
+  /**
+   * 指定コースIDに紐づく全コース申込状況を取得する。
+   *
+   * @param courseId 生徒ID
+   * @return コース情報のリスト
+   */
+  List<CourseStatus> findCourseStatusByCourseId(String courseId);
 
   // ----------- Update -----------
 
