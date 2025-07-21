@@ -79,8 +79,15 @@
   <!--コース申込状況の更新。 状況のみ更新する。-->
   <update id="updateCourseStatus">
     UPDATE courses_status
-    SET app_status = #{newStatus}
+    SET app_status = #{appStatus}
     WHERE course_id = #{courseId}
+  </update>
+
+  <!--指定IDのコース申込状況の更新。 状況のみ更新する。-->
+  <update id="updateCourseStatusById">
+    UPDATE courses_status
+    SET app_status = #{appStatus}
+    WHERE id = #{id}
   </update>
 
   <!--Delete-->

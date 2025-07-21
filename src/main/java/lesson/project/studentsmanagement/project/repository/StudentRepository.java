@@ -113,6 +113,14 @@ public interface StudentRepository {
    */
   void updateCourseStatus(@Param("courseId") String courseId, @Param("appStatus") int appStatus);
 
+  /**
+   * IDごとのコース申込状況の更新。 状況のみ更新する。
+   *
+   * @param id        コースID
+   * @param appStatus 新しい申込ステータス
+   */
+  void updateCourseStatusById(Long id, Integer appStatus);
+
   // ----------- Delete -----------
 
   /**

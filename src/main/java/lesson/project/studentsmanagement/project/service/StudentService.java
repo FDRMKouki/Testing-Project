@@ -127,7 +127,7 @@ public class StudentService {
   // ----------- Update -----------
 
   /**
-   * 生徒とコース名を更新する。 生徒とコースの情報をそれぞれ更新
+   * 生徒とコース名を更新する。 生徒とコースの情報と申込状況をそれぞれ更新
    *
    * @param studentDetail 更新内容
    */
@@ -140,6 +140,17 @@ public class StudentService {
     repository.updateStudent(studentDetail.getStudent());
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+
+    // 申込状況（appStatus）を更新
+    if (studentDetail.getCourseStatusList() != null) {
+      for (CourseStatus status : studentDetail.getCourseStatusList()) {
+        if (status.getId() != null) {
+          repository.updateCourseStatusById(status.getId(), status.getAppStatus());
+        } else {
+          throw new IllegalArgumentException("CourseStatus の id または appStatus が null です。");
+        }
+      }
+    }
   }
 
   // ----------- Delete -----------
