@@ -44,15 +44,49 @@
   <select id="findStudentById" resultType="lesson.project.studentsmanagement.project.data.Student">
     SELECT * FROM students WHERE id = #{id}
   </select>
-  <!--指定生徒IDに紐づく全コース情報を取得する。-->
+  <!--指定生徒IDに紐づく全コース情報を取得する。(単一の生徒向け)-->
   <select id="findStudentCourseByStudentId"
     resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
-  <!--指定コースIDに紐づく申込状況を取得する。-->
+  <!--指定コースIDに紐づく申込状況を取得する。(単一の生徒向け)-->
   <select id="findCourseStatusByCourseId"
     resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
     SELECT * FROM courses_status WHERE course_id = #{courseId}
+  </select>
+  <!--指定条件と部分的に一致する生徒の詳細を取得する。-->
+  <select id="searchStudentsByConditions"
+    resultType="lesson.project.studentsmanagement.project.data.Student">
+    SELECT *
+    FROM students
+    WHERE is_deleted = false
+    <if test="name != null and name != ''">
+      AND name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    <if test="furigana != null and furigana != ''">
+      AND furigana LIKE CONCAT('%', #{furigana}, '%')
+    </if>
+    <if test="mailAddress != null and mailAddress != ''">
+      AND mail_address LIKE CONCAT('%', #{mailAddress}, '%')
+    </if>
+  </select>
+  <!--指定生徒IDに紐づく全コース情報を取得する。(複数の生徒向け)-->
+  <select id="findStudentCoursesByStudentIds"
+    resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
+    SELECT * FROM students_courses
+    WHERE student_id IN
+    <foreach collection="studentIds" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+  <!--指定コースIDに紐づく申込状況を取得する。(複数の生徒向け)-->
+  <select id="findCourseStatusesByCourseIds"
+    resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
+    SELECT * FROM courses_status
+    WHERE course_id IN
+    <foreach collection="courseIds" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
   </select>
 
   <!--Update-->

@@ -74,7 +74,7 @@ public interface StudentRepository {
   Student findStudentById(String id);
 
   /**
-   * 指定生徒IDに紐づく全コース情報を取得する。
+   * 指定生徒IDに紐づく全コース情報を取得する。(単一の生徒向け)
    *
    * @param studentId 生徒ID
    * @return コース情報のリスト
@@ -82,13 +82,42 @@ public interface StudentRepository {
   List<StudentCourse> findStudentCourseByStudentId(String studentId);
 
   /**
-   * 指定コースIDに紐づく全コース申込状況を取得する。
+   * 指定コースIDに紐づく全コース申込状況を取得する。(単一の生徒向け)
    *
    * @param courseId 生徒ID
    * @return コース情報のリスト
    */
   List<CourseStatus> findCourseStatusByCourseId(String courseId);
 
+  /**
+   * 条件で生徒を検索（名前・ふりがな・メールアドレスの部分一致）。
+   *
+   * @param name        名前（部分一致／null可）
+   * @param furigana    フリガナ（部分一致／null可）
+   * @param mailAddress メールアドレス（部分一致／null可）
+   * @return 条件に一致した生徒リスト
+   */
+  List<Student> searchStudentsByConditions(
+      @Param("name") String name,
+      @Param("furigana") String furigana,
+      @Param("mailAddress") String mailAddress
+  );
+
+  /**
+   * 指定された生徒IDのリストに紐づくすべてのコース情報を取得する。(複数の生徒向け)
+   *
+   * @param studentIds 生徒IDリスト
+   * @return 該当するStudentCourseリスト
+   */
+  List<StudentCourse> findStudentCoursesByStudentIds(@Param("studentIds") List<String> studentIds);
+
+  /**
+   * 指定されたコースIDリストに紐づく全ての申込状況を取得する。(複数の生徒向け)
+   *
+   * @param courseIds コースIDリスト
+   * @return 該当するCourseStatusリスト
+   */
+  List<CourseStatus> findCourseStatusesByCourseIds(@Param("courseIds") List<String> courseIds);
   // ----------- Update -----------
 
   /**

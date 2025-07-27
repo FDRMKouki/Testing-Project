@@ -124,6 +124,34 @@ public class StudentService {
     return new StudentDetail(student, courses, courses_status);
   }
 
+  /**
+   * 条件で生徒を検索（名前・ふりがな・メールアドレスの部分一致）。
+   *
+   * @param name        名前の一部（null可）
+   * @param furigana    フリガナの一部（null可）
+   * @param mailAddress メールアドレスの一部（null可）
+   * @return 検索結果の生徒詳細リスト
+   */
+  public List<StudentDetail> searchStudents(String name, String furigana, String mailAddress) {
+    List<Student> students = repository.searchStudentsByConditions(name, furigana, mailAddress);
+
+    if (students.isEmpty()) {
+      return List.of();
+    }
+
+    // IDリストを使ってコースと申込状況を一括取得
+    List<String> studentIds = students.stream()
+        .map(s -> s.getId().toString())
+        .collect(Collectors.toList());
+
+    List<StudentCourse> courses = repository.findStudentCoursesByStudentIds(studentIds);
+    List<CourseStatus> statuses = repository.findCourseStatusesByCourseIds(
+        courses.stream().map(c -> c.getId().toString()).collect(Collectors.toList())
+    );
+
+    return converter.convertStudentDetails(students, courses, statuses);
+  }
+
   // ----------- Update -----------
 
   /**
