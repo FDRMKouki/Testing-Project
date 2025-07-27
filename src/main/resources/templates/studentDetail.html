@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>生徒詳細情報</title>
+</head>
+<body>
+<h1>生徒詳細</h1>
+
+<!-- 生徒プロフィール -->
+<h2>プロフィール情報</h2>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <td th:text="${studentDetail.student.id}">Id</td>
+  </tr>
+  <tr>
+    <th>名前</th>
+    <td th:text="${studentDetail.student.name}">名前</td>
+  </tr>
+  <tr>
+    <th>カナ名</th>
+    <td th:text="${studentDetail.student.furigana}">フリガナ</td>
+  </tr>
+  <tr>
+    <th>ニックネーム</th>
+    <td th:text="${studentDetail.student.nickname}">たろちゃん</td>
+  </tr>
+  <tr>
+    <th>メールアドレス</th>
+    <td th:text="${studentDetail.student.mailAddress}">メールアドレス</td>
+  </tr>
+  <tr>
+    <th>地域</th>
+    <td th:text="${studentDetail.student.region}">地域</td>
+  </tr>
+  <tr>
+    <th>年齢</th>
+    <td th:text="${studentDetail.student.age}">1</td>
+  </tr>
+  <tr>
+    <th>性別</th>
+    <td th:text="${studentDetail.student.gender}">性別</td>
+  </tr>
+  <tr>
+    <th>備考</th>
+    <td th:text="${studentDetail.student.remark}">備考</td>
+  </tr>
+</table>
+
+<!-- 受講コース情報 -->
+<h2>受講コース</h2>
+<table border="1">
+  <thead>
+  <tr>
+    <th>コース名</th>
+    <th>開始日</th>
+    <th>修了予定日</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="course : ${studentDetail.studentsCourses}">
+    <td th:text="${course.courseName}">Java初級</td>
+    <td th:text="${#temporals.format(course.startDatetimeAt, 'yyyy-MM-dd')}">2024-01-01</td>
+    <td th:text="${#temporals.format(course.predictedCompleteDatetimeAt, 'yyyy-MM-dd')}">
+      2024-06-01
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+<!-- 更新ボタン -->
+<a th:href="@{/updateStudent/{id}(id=${studentDetail.student.id})}">
+  <button type="button">更新</button>
+</a>
+
+<!-- 戻るリンク -->
+<p><a href="/studentList">← 一覧に戻る</a></p>
+
+</body>
+</html>
