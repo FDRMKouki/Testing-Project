@@ -1,8 +1,8 @@
 package lesson.project.studentsmanagement.project.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
 import lesson.project.studentsmanagement.project.data.CourseStatus;
@@ -111,18 +111,34 @@ public class StudentService {
     }
     List<StudentCourse> courses = repository.findStudentCourseByStudentId(id);
 
-    //コースの申込状況はコース情報としか結びついていないため各コースのIDと結びついた申込状況を持ってくる
-    List<CourseStatus> courses_status = new ArrayList<>();
-    for (StudentCourse course : courses) { //取得してきたコースの数だけ
-      List<CourseStatus> statusList = repository.findCourseStatusByCourseId(
-          course.getId().toString());
-      if (statusList != null && !statusList.isEmpty()) {
-        courses_status.addAll(statusList);
-      }
+    // コースIDリストを作成
+    List<Long> courseIds = courses.stream()
+        .map(StudentCourse::getId)
+        .collect(Collectors.toList());
+
+    // コースIDに対応する申込状況を一括取得
+    List<CourseStatus> courseStatuses = repository.findCourseStatusesByCourseIds(
+        courseIds.stream()
+            .map(String::valueOf)
+            .collect(Collectors.toList())
+    );
+
+    // CourseStatusをcourseIdをキーにMap化
+    Map<Long, Integer> courseStatusMap = courseStatuses.stream()
+        .collect(Collectors.toMap(
+            cs -> Long.valueOf(cs.getCourseId()),
+            CourseStatus::getAppStatus // Integer型をそのまま使う
+        ));
+
+    // StudentCourse に appStatus をセット
+    for (StudentCourse course : courses) {
+      Integer statusInt = courseStatusMap.get(course.getId());
+      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "0");
     }
 
-    return new StudentDetail(student, courses, courses_status);
+    return new StudentDetail(student, courses, courseStatuses);
   }
+
 
   /**
    * 条件で生徒を検索（名前・ふりがな・メールアドレスの部分一致）。

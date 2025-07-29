@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class StudentPageController {
@@ -44,5 +46,16 @@ public class StudentPageController {
     model.addAttribute("studentDetail", studentDetail);
     return "updateStudent";
   }
+
+  //更新フォームで更新ボタン押されたときの処理
+  @PostMapping("/updateStudentPage")
+  public String updateStudentPage(@ModelAttribute StudentDetail studentDetail) {
+    // Serviceで更新
+    service.updateStudent(studentDetail);
+
+    // 画面遷移用に redirect 返却
+    return "redirect:/studentDetailPage/" + studentDetail.getStudent().getId();
+  }
+
 
 }

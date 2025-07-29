@@ -14,6 +14,7 @@ import lombok.Setter;
 @Schema(description = "受講生情報")
 @Getter
 @Setter
+
 public class Student {
 
   @EqualsAndHashCode.Include
@@ -63,7 +64,10 @@ public class Student {
   @Schema(hidden = true)
   private List<StudentCourse> studentCourse;
 //Postmanにて、送るjsonはこれに合わせる必要がある
-
+  
+  public Student() {
+    // デフォルトコンストラクタ（Spring MVCのバインディング用）
+  }
 
   public Student(Long id, String name, String furigana, String nickname,
       String mailAddress, String region, int age,

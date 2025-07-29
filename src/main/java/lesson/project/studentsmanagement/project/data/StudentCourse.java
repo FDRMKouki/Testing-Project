@@ -28,6 +28,9 @@ public class StudentCourse {
   @EqualsAndHashCode.Include
   private LocalDateTime predictedCompleteDatetimeAt;
 
+  //こいつはhtml表示用
+  private String appStatus;
+
   public StudentCourse(Long studentId, String courseName, LocalDateTime startDatetimeAt,
       LocalDateTime predictedCompleteDatetimeAt) {
     this.studentId = studentId;

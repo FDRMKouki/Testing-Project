@@ -56,14 +56,24 @@
     <th>コース名</th>
     <th>開始日</th>
     <th>修了予定日</th>
+    <th>申込状況</th>
   </tr>
   </thead>
   <tbody>
-  <tr th:each="course : ${studentDetail.studentsCourses}">
+  <tr th:each="course : ${studentDetail.studentCourseList}">
     <td th:text="${course.courseName}">Java初級</td>
     <td th:text="${#temporals.format(course.startDatetimeAt, 'yyyy-MM-dd')}">2024-01-01</td>
     <td th:text="${#temporals.format(course.predictedCompleteDatetimeAt, 'yyyy-MM-dd')}">
       2024-06-01
+    </td>
+    <td>
+      <span th:switch="${course.appStatus}">
+        <span th:case="'1'">仮申込</span>
+        <span th:case="'2'">本申込</span>
+        <span th:case="'3'">受講中</span>
+        <span th:case="'4'">受講終了</span>
+        <span th:case="*">不明</span>
+      </span>
     </td>
   </tr>
   </tbody>
@@ -71,7 +81,7 @@
 
 
 <!-- 更新ボタン -->
-<a th:href="@{/updateStudent/{id}(id=${studentDetail.student.id})}">
+<a th:href="@{/updateStudentPage/{id}(id=${studentDetail.student.id})}">
   <button type="button">更新</button>
 </a>
 
