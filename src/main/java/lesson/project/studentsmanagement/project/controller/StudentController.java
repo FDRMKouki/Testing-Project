@@ -174,10 +174,9 @@ public class StudentController {
     service.logicalDeleteStudent(studentDetail.getStudent());
     Long id = studentDetail.getStudent().getId();
     logger.info("削除された生徒ID: {}", id);
-
-    // 削除直後の状態を取得して返す（is_deleted=true）
     StudentDetail deleted = service.getStudentDetailById(id.toString());
     return ResponseEntity.ok(deleted);
   }
+
 
 }

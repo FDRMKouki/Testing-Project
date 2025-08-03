@@ -133,7 +133,11 @@ public class StudentService {
     // StudentCourse に appStatus をセット
     for (StudentCourse course : courses) {
       Integer statusInt = courseStatusMap.get(course.getId());
-      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "0");
+      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "1"); // デフォルト仮申込
+    }
+    // 空リストを設定（StudentCourseのnull防止）
+    if (courses == null) {
+      courses = List.of();
     }
 
     return new StudentDetail(student, courses, courseStatuses);
@@ -182,19 +186,16 @@ public class StudentService {
     }
 
     repository.updateStudent(studentDetail.getStudent());
-    studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
 
-    // 申込状況（appStatus）を更新
-    if (studentDetail.getCourseStatusList() != null) {
-      for (CourseStatus status : studentDetail.getCourseStatusList()) {
-        if (status.getId() != null) {
-          repository.updateCourseStatusById(status.getId(), status.getAppStatus());
-        } else {
-          throw new IllegalArgumentException("CourseStatus の id または appStatus が null です。");
-        }
-      }
-    }
+    studentDetail.getStudentCourseList()
+        .forEach(studentCourse -> {
+          repository.updateStudentCourse(studentCourse);
+
+          if (studentCourse.getId() != null && studentCourse.getAppStatus() != null) {
+            int statusInt = Integer.parseInt(studentCourse.getAppStatus());
+            repository.updateCourseStatus(studentCourse.getId().toString(), statusInt);
+          }
+        });
   }
 
   // ----------- Delete -----------

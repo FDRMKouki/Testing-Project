@@ -11,7 +11,10 @@
   <table border="1">
     <tr>
       <th>名前</th>
-      <td><input type="text" th:field="*{student.name}"/></td>
+      <td><input type="text" th:field="*{student.name}"/>
+        <div th:if="${#fields.hasErrors('student.name')}" th:errors="*{student.name}"
+             class="text-danger"></div>
+      </td>
     </tr>
     <tr>
       <th>カナ名</th>
@@ -45,14 +48,14 @@
   <!-- コース名入力欄 -->
   <div id="courses-container">
     <h3>受講コース名</h3>
-    <div th:each="course, stat : *{studentsCourses}" class="course-entry">
-      <label th:for="'studentsCourses_' + ${stat.index} + '_courseName'">
+    <div th:each="course, stat : *{studentCourseList}" class="course-entry">
+      <label th:for="'studentCourseList_' + ${stat.index} + '_courseName'">
         コース名 [[${stat.index + 1}]]:
       </label>
       <input type="text"
-             th:id="'studentsCourses_' + ${stat.index} + '_courseName'"
-             th:name="'studentsCourses[' + ${stat.index} + '].courseName'"
-             th:value="*{studentsCourses[__${stat.index}__].courseName}"/>
+             th:id="'studentsCourseList_' + ${stat.index} + '_courseName'"
+             th:name="'studentCourseList[' + ${stat.index} + '].courseName'"
+             th:value="*{studentCourseList[__${stat.index}__].courseName}"/>
 
       <!-- 削除ボタン -->
       <button type="button" onclick="removeCourse(this)">削除</button>
@@ -66,7 +69,7 @@
   <button type="submit">登録</button>
 </form>
 
-<p><a href="/studentList">← 一覧に戻る</a></p>
+<p><a href="/studentListPage">← 一覧に戻る</a></p>
 
 </body>
 <!-- ここだけJavaScript。コース追加ボタンやコース削除ボタンが押されたときの処理 -->
@@ -78,9 +81,9 @@
     const div = document.createElement('div');
     div.className = 'course-entry';
     div.innerHTML = `
-      <label for="studentsCourses_${index}_courseName">コース名 ${index + 1}:</label>
-      <input type="text" id="studentsCourses_${index}_courseName"
-             name="studentsCourses[${index}].courseName"/>
+      <label for="studentsCourseList_${index}_courseName">コース名 ${index + 1}:</label>
+      <input type="text" id="studentsCourseList_${index}_courseName"
+             name="studentsCourseList[${index}].courseName"/>
       <button type="button" onclick="removeCourse(this)">削除</button>
       <br/>
     `;
