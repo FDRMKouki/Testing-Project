@@ -15,7 +15,6 @@ import lombok.Setter;
 @Schema(description = "受講生情報")
 @Getter
 @Setter
-
 public class Student {
 
   @EqualsAndHashCode.Include
