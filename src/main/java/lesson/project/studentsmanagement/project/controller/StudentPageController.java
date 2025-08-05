@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class StudentPageController {
@@ -32,9 +33,9 @@ public class StudentPageController {
   public String showRegisterStudentForm(Model model) {
     StudentDetail studentDetail = new StudentDetail();
 
-    // 空のリストで初期化（← これがポイント！）
+    // 空のリストで初期化
     List<StudentCourse> initialCourseList = new ArrayList<>();
-    initialCourseList.add(new StudentCourse()); // 空のコース1件を追加
+    initialCourseList.add(new StudentCourse()); // あらかじめ空のコース1件を追加しておく
     studentDetail.setStudentCourseList(initialCourseList);
 
     model.addAttribute("studentDetail", studentDetail);
@@ -55,7 +56,7 @@ public class StudentPageController {
     return "redirect:/studentListPage";
   }
 
-  // 一覧表示（テンプレート）
+  // 一覧表示
   @GetMapping("/studentListPage")
   public String showStudentList(Model model) {
     List<StudentDetail> studentList = service.searchStudentList();
@@ -63,7 +64,7 @@ public class StudentPageController {
     return "studentList";
   }
 
-  // 詳細表示（テンプレート）
+  // 詳細表示
   @GetMapping("/studentDetailPage/{id}")
   public String showStudentDetail(@PathVariable("id") String id, Model model) {
     StudentDetail detail = service.getStudentDetailById(id);
@@ -71,12 +72,26 @@ public class StudentPageController {
     return "studentDetail";
   }
 
-  // 更新フォーム表示（テンプレート）
+  //条件検索時の一覧表示
+  @GetMapping("/searchStudentsPage")
+  public String searchStudentsPage(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String furigana,
+      @RequestParam(required = false) String mailAddress,
+      Model model
+  ) {
+    List<StudentDetail> filteredStudents = service.searchStudents(name, furigana, mailAddress);
+    model.addAttribute("studentList", filteredStudents);
+    return "studentList";  // studentList.html を再利用
+  }
+
+
+  // 更新フォーム表示
   @GetMapping("/updateStudentPage/{id}")
   public String showUpdateStudentForm(@PathVariable("id") String id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
 
-    // 安全な null 対策（再確認）
+    //null 対策
     if (studentDetail.getStudentCourseList() == null) {
       studentDetail.setStudentCourseList(new ArrayList<>());
     }
@@ -105,7 +120,7 @@ public class StudentPageController {
     // Serviceで更新
     service.updateStudent(studentDetail);
 
-    // 画面遷移用に redirect 返却
+    //画面遷移用にredirect返却
     return "redirect:/studentDetailPage/" + studentDetail.getStudent().getId();
   }
 
