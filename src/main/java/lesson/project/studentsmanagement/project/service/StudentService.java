@@ -44,6 +44,7 @@ public class StudentService {
     repository.registerStudent(student);  // IDがセットされる
 
     List<StudentCourse> courses = filterValidCourses(studentDetail.getStudentCourseList());
+    validateCourses(courses); // ★ 追加
 
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime oneYearLater = now.plusYears(1);
@@ -185,6 +186,8 @@ public class StudentService {
       throw new IllegalArgumentException("IDは必須です。");
     }
 
+    List<StudentCourse> courses = studentDetail.getStudentCourseList();
+    validateCourses(courses);
     repository.updateStudent(studentDetail.getStudent());
 
     studentDetail.getStudentCourseList()
@@ -208,4 +211,18 @@ public class StudentService {
   public void logicalDeleteStudent(Student student) {
     repository.logicalDeleteStudent(student);
   }
+
+
+  private void validateCourses(List<StudentCourse> courses) {
+    if (courses == null || courses.isEmpty()) {
+      throw new IllegalArgumentException("少なくとも1つのコース情報が必要です。");
+    }
+
+    for (StudentCourse course : courses) {
+      if (course.getCourseName() == null || course.getCourseName().trim().isEmpty()) {
+        throw new IllegalArgumentException("コース名は空にできません。");
+      }
+    }
+  }
+
 }

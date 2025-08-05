@@ -3,7 +3,6 @@ package lesson.project.studentsmanagement.project.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
 import lesson.project.studentsmanagement.project.service.StudentService;
@@ -34,9 +33,9 @@ public class StudentPageController {
     StudentDetail studentDetail = new StudentDetail();
 
     // 空のリストで初期化（← これがポイント！）
-    studentDetail.setStudentCourseList(new ArrayList<>());
-    Student student = new Student();
-    studentDetail.setStudent(student);
+    List<StudentCourse> initialCourseList = new ArrayList<>();
+    initialCourseList.add(new StudentCourse()); // 空のコース1件を追加
+    studentDetail.setStudentCourseList(initialCourseList);
 
     model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";

@@ -7,7 +7,7 @@
 <body>
 <h1>新規生徒登録</h1>
 
-<form th:action="@{/registerStudent}" th:object="${studentDetail}" method="post">
+<form th:action="@{/registerStudentPage}" th:object="${studentDetail}" method="post">
   <table border="1">
     <tr>
       <th>名前</th>
@@ -90,11 +90,19 @@
     container.appendChild(div);
   }
 
-  function removeCourse(button) {
-    const entry = button.closest('.course-entry');
-    entry.remove();
-    resetCourseFieldNames();
+function removeCourse(button) {
+  const container = document.getElementById('courses-container');
+  const entries = container.querySelectorAll('.course-entry');
+
+  if (entries.length <= 1) {
+    alert("少なくとも1つのコースが必要です。");
+    return;
   }
+
+  const entry = button.closest('.course-entry');
+  entry.remove();
+  resetCourseFieldNames();
+}
 
   function resetCourseFieldNames() {
     const entries = document.querySelectorAll('.course-entry');
