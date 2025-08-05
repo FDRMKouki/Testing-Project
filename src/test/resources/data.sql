@@ -1,4 +1,6 @@
 -- 受講生
+-- Phx,Aznsはコースを2つもつ
+--Im not here,は削除されている生徒
 INSERT INTO students (  id, name, furigana, nickname, mail_address, region, age, gender, remark, is_deleted) VALUES
 (  1, 'Cabn', 'Carbn', 'C', 'cabn@example', 'everywhere', 20, 'male', 'cabnnoremark', 0),
 (  2, 'Slco', 'Silico', 'Si', 'slco@example', 'here', 20, 'female', 'slconoremark', 0),
@@ -19,3 +21,14 @@ INSERT INTO students_courses (id, student_id, course_name, start_datetime_at, pr
 (7, 5, 'Java', '2025-12-01 10:00:00', '2026-01-30 18:00:00');
 --理由上に同じ
 ALTER TABLE students_courses ALTER COLUMN id RESTART WITH 8;
+--コース申込状況
+INSERT INTO courses_status (id, course_id, app_status) VALUES
+(1, 1, 1),
+(2, 2, 1),
+(3, 3, 1),
+(4, 4, 1),
+(5, 5, 1),
+(6, 6, 1),
+(7, 7, 1);
+--理由上に同じ
+ALTER TABLE courses_status ALTER COLUMN id RESTART WITH 8;
