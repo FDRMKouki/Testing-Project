@@ -56,41 +56,43 @@ class StudentServiceTest {
 
   @Test
   void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
-    String id = "123"; // 対象の生徒ID
+    // 準備：テストで使うIDとモック返却データ
+    String studentId = "123";
 
     Student student = new Student(
-        123L, "検索太郎", "ケンサクタロウ", "けんたろ",
-        "kensaku@example.com", "東京", 22, "男性", "備考", false
+        123L, "TestName", "テストネーム", "テスト",
+        "test@example.com", "東京", 30, "男性", "備考", false
     );
 
     StudentCourse course = new StudentCourse(
-        10L, "Java",
-        LocalDateTime.of(2025, 7, 1, 10, 0),
-        LocalDateTime.of(2025, 9, 1, 18, 0)
+        1L, 123L, "Java",
+        LocalDateTime.of(2025, 1, 1, 10, 0),
+        LocalDateTime.of(2025, 3, 31, 18, 0)
     );
 
-    course.setStudentId(123L);
-    List<StudentCourse> courseList = List.of(course);
+    CourseStatus status = new CourseStatus(1L, 2); // 申込状況「2」
 
-    CourseStatus courseStatus = new CourseStatus(10L, 3); // 受講中(3)
-    List<CourseStatus> courseStatusList = List.of(courseStatus);
+    // モックの振る舞いを定義
+    Mockito.when(repository.findStudentById(studentId)).thenReturn(student);
+    Mockito.when(repository.findStudentCourseByStudentId(studentId)).thenReturn(List.of(course));
+    Mockito.when(repository.findCourseStatusesByCourseIds(List.of(String.valueOf(1L))))
+        .thenReturn(List.of(status));
 
-    // モック定義
-    Mockito.when(repository.findStudentById(id)).thenReturn(student);
-    Mockito.when(repository.findStudentCourseByStudentId(id)).thenReturn(courseList);
-    Mockito.when(repository.findCourseStatusesByCourseIds(List.of("10")))
-        .thenReturn(courseStatusList);
+    // 実行：対象メソッド呼び出し
+    StudentDetail result = sut.getStudentDetailById(studentId);
 
-    StudentDetail result = sut.getStudentDetailById(id);
+    // 検証：モックの呼び出しが期待通りか
+    Mockito.verify(repository).findStudentById(studentId);
+    Mockito.verify(repository).findStudentCourseByStudentId(studentId);
+    Mockito.verify(repository).findCourseStatusesByCourseIds(List.of(String.valueOf(1L)));
 
-    // 検証
-    verify(repository, times(1)).findStudentById(id);
-    verify(repository, times(1)).findStudentCourseByStudentId(id);
-    verify(repository, times(1)).findCourseStatusesByCourseIds(List.of("10"));
-
+    // 結果の検証
     assertThat(result.getStudent()).isEqualTo(student);
-    assertThat(result.getStudentCourseList()).isEqualTo(courseList);
-    assertThat(result.getStudentCourseList().get(0).getAppStatus()).isEqualTo("3");
+    assertThat(result.getStudentCourseList()).hasSize(1);
+    assertThat(result.getStudentCourseList().get(0)).isEqualTo(course);
+    assertThat(result.getStudentCourseList().get(0).getAppStatus()).isEqualTo("2");
+    assertThat(result.getCourseStatusList().get(0).getAppStatus()).isEqualTo(2);
+
   }
 
 
@@ -103,7 +105,7 @@ class StudentServiceTest {
 
     LocalDateTime now = LocalDateTime.now();
 
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(100L,
         100L, "Java", now, now.plusYears(1)
     );
     CourseStatus status = new CourseStatus(100L, 1);
@@ -131,13 +133,14 @@ class StudentServiceTest {
         "change@example.com", "大阪", 30, "男性", "更新メモ", false
     );
 
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(1L,
         200L, "変更後Java",
         LocalDateTime.of(2025, 8, 1, 9, 0),
         LocalDateTime.of(2025, 10, 31, 18, 0)
     );
+    CourseStatus status = new CourseStatus(1L, 1);
 
-    StudentDetail detail = new StudentDetail(student, List.of(course));
+    StudentDetail detail = new StudentDetail(student, List.of(course), List.of(status));
 
     sut.updateStudent(detail);
 
@@ -152,35 +155,37 @@ class StudentServiceTest {
         "search@example.com", "関西", 28, "女性", "備考", false
     );
 
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(8L,
         201L, "Python",
         LocalDateTime.of(2025, 6, 1, 10, 0),
         LocalDateTime.of(2025, 9, 1, 18, 0)
     );
     course.setStudentId(101L);
 
-    CourseStatus status = new CourseStatus(201L, 2); // 本申込(2)
+    CourseStatus status = new CourseStatus(8L, 2); // 本申込(2)
 
     Mockito.when(repository.searchStudentsByConditions("条件", null, null))
         .thenReturn(List.of(student));
     Mockito.when(repository.findStudentCoursesByStudentIds(List.of("101")))
         .thenReturn(List.of(course));
-    Mockito.when(repository.findCourseStatusesByCourseIds(List.of("201")))
-        .thenReturn(List.of(status));
+    Mockito.when(repository.findCourseStatusesByCourseIds(List.of(course.getId().toString()))
+    ).thenReturn(List.of(status));
+
     Mockito.when(converter.convertStudentDetails(Mockito.any(), Mockito.any(), Mockito.any()))
-        .thenCallRealMethod(); // 省略可（mockしてるなら）
+        .thenCallRealMethod();
 
     List<StudentDetail> results = sut.searchStudents("条件", null, null);
 
     verify(repository).searchStudentsByConditions("条件", null, null);
     verify(repository).findStudentCoursesByStudentIds(List.of("101"));
-    verify(repository).findCourseStatusesByCourseIds(List.of("201"));
+    verify(repository).findCourseStatusesByCourseIds(List.of("8"));
 
     assertThat(results).hasSize(1);
     StudentDetail detail = results.get(0);
     assertThat(detail.getStudent().getName()).isEqualTo("条件検索");
     assertThat(detail.getStudentCourseList()).hasSize(1);
     assertThat(detail.getStudentCourseList().get(0).getAppStatus()).isEqualTo("2");
+
   }
 
   @Test

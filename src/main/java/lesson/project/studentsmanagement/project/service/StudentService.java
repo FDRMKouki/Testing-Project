@@ -170,6 +170,19 @@ public class StudentService {
         courses.stream().map(c -> c.getId().toString()).collect(Collectors.toList())
     );
 
+    // CourseStatus を courseId をキーにMap化
+    Map<Long, Integer> courseStatusMap = statuses.stream()
+        .collect(Collectors.toMap(
+            cs -> Long.valueOf(cs.getCourseId()),
+            CourseStatus::getAppStatus
+        ));
+
+    // StudentCourse に appStatus をセット
+    for (StudentCourse course : courses) {
+      Integer statusInt = courseStatusMap.get(course.getId());
+      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "1");
+    }
+
     return converter.convertStudentDetails(students, courses, statuses);
   }
 
@@ -209,7 +222,7 @@ public class StudentService {
    * @param student 対象の生徒
    */
   public void logicalDeleteStudent(Student student) {
-    repository.logicalDeleteStudent(student);
+    repository.logicalDeleteStudent(student.getId());
   }
 
 

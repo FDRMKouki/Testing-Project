@@ -155,7 +155,8 @@ public interface StudentRepository {
   /**
    * 指定IDの生徒を論理削除する（is_deleted = 1）。
    *
-   * @param student 対象生徒
+   * @param id 対象生徒
+   * @return
    */
-  void logicalDeleteStudent(Student student);
+  int logicalDeleteStudent(@Param("id") Long id);
 }

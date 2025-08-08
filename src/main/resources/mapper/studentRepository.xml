@@ -126,11 +126,23 @@
 
   <!--Delete-->
   <!--指定IDの生徒を論理削除する（is_deleted = 1）。-->
-  <update id="logicalDeleteStudent">
+  <update id="logicalDeleteStudent" flushCache="true">
     UPDATE students SET is_deleted = 1 WHERE id = #{id}
   </update>
 
   <!--resultMap系-->
+  <resultMap id="StudentResultMap" type="lesson.project.studentsmanagement.project.data.Student">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="furigana" column="furigana"/>
+    <result property="nickname" column="nickname"/>
+    <result property="mailAddress" column="mail_address"/>
+    <result property="region" column="region"/>
+    <result property="age" column="age"/>
+    <result property="gender" column="gender"/>
+    <result property="remark" column="remark"/>
+    <result property="deleted" column="is_deleted"/>
+  </resultMap>
   <resultMap id="StudentCourseResultMap"
     type="lesson.project.studentsmanagement.project.data.StudentCourse">
     <id property="id" column="id"/>

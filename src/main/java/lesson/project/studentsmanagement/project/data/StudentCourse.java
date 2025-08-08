@@ -34,8 +34,9 @@ public class StudentCourse {
   //こいつはhtml表示用
   private String appStatus;
 
-  public StudentCourse(Long studentId, String courseName, LocalDateTime startDatetimeAt,
+  public StudentCourse(Long id, Long studentId, String courseName, LocalDateTime startDatetimeAt,
       LocalDateTime predictedCompleteDatetimeAt) {
+    this.id = id;
     this.studentId = studentId;
     this.courseName = courseName;
     this.startDatetimeAt = startDatetimeAt;

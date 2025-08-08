@@ -13,6 +13,7 @@ import jakarta.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
@@ -80,8 +81,9 @@ class StudentControllerTest {
   void StudentDetailのバリデーション_StudentとCourseの必須項目が不足していたらエラーが出ることのテスト() {
     Student student = new Student(null, null, null, null, null, null, 0, null, null,
         false); // 空のコンストラクタ
-    StudentCourse course = new StudentCourse(null, null, null, null); // 空のコンストラクタ
-    StudentDetail detail = new StudentDetail(student, List.of(course));
+    StudentCourse course = new StudentCourse(null, null, null, null, null); // 空のコンストラクタ
+    CourseStatus status = new CourseStatus(null, 0); // 空のコンストラクタ
+    StudentDetail detail = new StudentDetail(student, List.of(course), List.of(status));
 
     Set<ConstraintViolation<StudentDetail>> violations = validator.validate(detail,
         UpdateGroup.class);
@@ -116,7 +118,7 @@ class StudentControllerTest {
         "taro@example.com", "東京", 21,
         "男性", null, false
     );
-    StudentDetail detail = new StudentDetail(student, List.of());
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
 
     Mockito.when(service.getStudentDetailById(id)).thenReturn(detail);
 
@@ -134,17 +136,20 @@ class StudentControllerTest {
         "男性", null, false
     );
 
-    StudentCourse course1 = new StudentCourse(123L, "Java",
+    StudentCourse course1 = new StudentCourse(1L, 123L, "Java",
         LocalDateTime.of(2025, 7, 1, 10, 0),
         LocalDateTime.of(2025, 9, 1, 18, 0)
     );
-    StudentCourse course2 = new StudentCourse(123L, "Spring Boot",
+    StudentCourse course2 = new StudentCourse(2L, 123L, "Spring Boot",
         LocalDateTime.of(2025, 7, 2, 10, 0),
         LocalDateTime.of(2025, 9, 2, 18, 0)
     );
+    CourseStatus status1 = new CourseStatus(1L, 1);
+    CourseStatus status2 = new CourseStatus(2L, 1);
 
     // StudentDetail にセット
-    StudentDetail detail = new StudentDetail(student, List.of(course1, course2));
+    StudentDetail detail = new StudentDetail(student, List.of(course1, course2),
+        List.of(status1, status2));
 
     // モック定義
     Mockito.when(service.getStudentDetailById(id)).thenReturn(detail);
@@ -168,7 +173,7 @@ class StudentControllerTest {
         "taro@example.com", "東京", 25,
         "男性", null, false
     );
-    StudentDetail detail = new StudentDetail(student, List.of());
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
 
     Mockito.when(service.registerStudent(Mockito.any(StudentDetail.class)))
         .thenReturn(detail);
@@ -209,7 +214,7 @@ class StudentControllerTest {
         "男性", null, false
     );
 
-    StudentDetail detail = new StudentDetail(student, List.of());
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
 
     String requestJson = """
         {

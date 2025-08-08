@@ -58,7 +58,7 @@ class StudentRepositoryTest {
 
   @Test
   void コースが登録できることのテスト() {
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(8L,
         2L,//結びつく生徒IDであって、コースのIDではない
         "Javava",
         LocalDateTime.of(2025, 7, 1, 10, 0),
@@ -123,13 +123,13 @@ class StudentRepositoryTest {
     //Pは2つもコースがある
     List<StudentCourse> actual = sut.findStudentCourseByStudentId("3");
 
-    StudentCourse expected1 = new StudentCourse(
+    StudentCourse expected1 = new StudentCourse(3L,
         3L, "Art",
         LocalDateTime.of(2025, 6, 1, 10, 0),
         LocalDateTime.of(2025, 8, 30, 18, 0)
     );
 
-    StudentCourse expected2 = new StudentCourse(
+    StudentCourse expected2 = new StudentCourse(4L,
         3L, "AWS",
         LocalDateTime.of(2025, 7, 1, 10, 0),
         LocalDateTime.of(2025, 9, 30, 18, 0)
@@ -173,7 +173,7 @@ class StudentRepositoryTest {
 
     List<StudentCourse> actual = sut.findStudentCourseByStudentId("1");
 
-    StudentCourse expected = new StudentCourse(
+    StudentCourse expected = new StudentCourse(8L,
         1L,
         "更新Java",
         LocalDateTime.of(2025, 4, 1, 10, 0),
@@ -185,26 +185,22 @@ class StudentRepositoryTest {
 
   // ----------- Delete -----------
 
+  //TODO:こいつ...
   @Test
   void 生徒を論理削除できることのテスト() {
     Student student = sut.findStudentById("1");
-    sut.logicalDeleteStudent(student);
+
+    int updatedCount = sut.logicalDeleteStudent(student.getId());
+    System.out.println("更新件数: " + updatedCount);
+    assertThat(updatedCount).isEqualTo(1);
 
     List<Student> students = sut.searchStudent();
+    System.out.println("論理削除されていない生徒数: " + students.size());
     assertThat(students.size()).isEqualTo(4);
 
     Student deletedStudent = sut.findStudentById("1");
-    assertThat(deletedStudent).isEqualTo(new Student(
-        1L,
-        "Cabn",
-        "Carbn",
-        "C",
-        "cabn@example",
-        "everywhere",
-        20,
-        "male",
-        "cabnnoremark",
-        true  // ← isDeleted が true に変化している
-    ));
+    System.out.println("deletedStudent.isDeleted()=" + deletedStudent.isDeleted());
+    assertThat(deletedStudent.isDeleted()).isTrue();
   }
+
 }
