@@ -109,8 +109,8 @@ function removeCourse(button) {
     entries.forEach((entry, i) => {
       const label = entry.querySelector('label');
       const input = entry.querySelector('input');
-      const id = `studentsCourses_${i}_courseName`;
-      const name = `studentsCourses[${i}].courseName`;
+      const id = `studentCourseList_${i}_courseName`;
+      const name = `studentCourseList[${i}].courseName`;
 
       label.setAttribute('for', id);
       label.textContent = `コース名 ${i + 1}:`;

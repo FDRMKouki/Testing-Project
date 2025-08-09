@@ -49,6 +49,7 @@ public class StudentController {
    * @param studentDetail 登録する生徒情報
    * @return 登録された生徒詳細
    */
+  //TODO:いまだに複数コース登録できましぇん
   @Operation(summary = "受講生登録", description = "受講生を登録する。")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(

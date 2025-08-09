@@ -44,19 +44,24 @@ public class StudentService {
     repository.registerStudent(student);  // IDがセットされる
 
     List<StudentCourse> courses = filterValidCourses(studentDetail.getStudentCourseList());
-    validateCourses(courses); // ★ 追加
+    validateCourses(courses);
 
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime oneYearLater = now.plusYears(1);
 
     for (StudentCourse course : courses) {
       initStudentsCourse(course, student, now, oneYearLater);
-      repository.registerStudentCourse(course);
+      repository.registerStudentCourse(course); // ここでIDがセットされる
     }
-    for (StudentCourse course : studentDetail.getStudentCourseList()) {
-      CourseStatus status = new CourseStatus(course.getId(), 1); // 仮申込(1)
+
+    // ここで courseStatus 登録
+    for (StudentCourse course : courses) {  // 元は studentDetail.getStudentCourseList() だが、ID反映のため coursesを使う
+      CourseStatus status = new CourseStatus(course.getId(), 1);
       repository.registerCourseStatus(status);
     }
+
+    // ここで ID がセットされた courses を studentDetail に反映する
+    studentDetail.setStudentCourseList(courses);
 
     return studentDetail;
   }
