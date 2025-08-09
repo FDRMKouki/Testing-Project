@@ -41,7 +41,7 @@
     SELECT * FROM courses_status
   </select>
   <!--指定IDの生徒を取得する。-->
-  <select id="findStudentById" resultType="lesson.project.studentsmanagement.project.data.Student">
+  <select id="findStudentById" resultMap="StudentResultMap">
     SELECT * FROM students WHERE id = #{id}
   </select>
   <!--指定生徒IDに紐づく全コース情報を取得する。(単一の生徒向け)-->
