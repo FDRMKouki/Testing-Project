@@ -133,7 +133,7 @@ class StudentControllerTest {
   }
 
   @Test
-  void 特定IDの受講生詳細と受講コースリストが取得できることのテスト() throws Exception {
+  void 特定のIDの受講生詳細と受講コースリストが取得できることのテスト() throws Exception {
     String id = "123";
 
     Student student = new Student(
