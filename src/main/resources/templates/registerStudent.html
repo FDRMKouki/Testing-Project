@@ -53,7 +53,7 @@
         コース名 [[${stat.index + 1}]]:
       </label>
       <input type="text"
-             th:id="'studentsCourseList_' + ${stat.index} + '_courseName'"
+             th:id="'studentCourseList_' + ${stat.index} + '_courseName'"
              th:name="'studentCourseList[' + ${stat.index} + '].courseName'"
              th:value="*{studentCourseList[__${stat.index}__].courseName}"/>
 
@@ -81,42 +81,42 @@
     const div = document.createElement('div');
     div.className = 'course-entry';
     div.innerHTML = `
-      <label for="studentsCourseList_${index}_courseName">コース名 ${index + 1}:</label>
-      <input type="text" id="studentsCourseList_${index}_courseName"
-             name="studentsCourseList[${index}].courseName"/>
+      <label for="studentCourseList_${index}_courseName">コース名 ${index + 1}:</label>
+      <input type="text" id="studentCourseList_${index}_courseName"
+             name="studentCourseList[${index}].courseName"/>
       <button type="button" onclick="removeCourse(this)">削除</button>
       <br/>
     `;
     container.appendChild(div);
   }
 
-function removeCourse(button) {
-  const container = document.getElementById('courses-container');
-  const entries = container.querySelectorAll('.course-entry');
+  function removeCourse(button) {
+    const container = document.getElementById('courses-container');
+    const entries = container.querySelectorAll('.course-entry');
 
-  if (entries.length <= 1) {
-    alert("少なくとも1つのコースが必要です。");
-    return;
+    if (entries.length <= 1) {
+      alert("少なくとも1つのコースが必要です。");
+      return;
+    }
+
+    const entry = button.closest('.course-entry');
+    entry.remove();
+    resetCourseFieldNames();
   }
 
-  const entry = button.closest('.course-entry');
-  entry.remove();
-  resetCourseFieldNames();
-}
+    function resetCourseFieldNames() {
+      const entries = document.querySelectorAll('.course-entry');
+      entries.forEach((entry, i) => {
+        const label = entry.querySelector('label');
+        const input = entry.querySelector('input');
+        const id = `studentCourseList_${i}_courseName`;
+        const name = `studentCourseList[${i}].courseName`;
 
-  function resetCourseFieldNames() {
-    const entries = document.querySelectorAll('.course-entry');
-    entries.forEach((entry, i) => {
-      const label = entry.querySelector('label');
-      const input = entry.querySelector('input');
-      const id = `studentCourseList_${i}_courseName`;
-      const name = `studentCourseList[${i}].courseName`;
-
-      label.setAttribute('for', id);
-      label.textContent = `コース名 ${i + 1}:`;
-      input.setAttribute('id', id);
-      input.setAttribute('name', name);
-    });
-  }
+        label.setAttribute('for', id);
+        label.textContent = `コース名 ${i + 1}:`;
+        input.setAttribute('id', id);
+        input.setAttribute('name', name);
+      });
+    }
 </script>
 </html>
