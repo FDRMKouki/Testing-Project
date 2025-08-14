@@ -59,17 +59,18 @@
     resultType="lesson.project.studentsmanagement.project.data.Student">
     SELECT *
     FROM students
-    WHERE is_deleted = false
-    <if test="name != null and name != ''">
+    WHERE is_deleted = 0
+    <if test="name != null">
       AND name LIKE CONCAT('%', #{name}, '%')
     </if>
-    <if test="furigana != null and furigana != ''">
+    <if test="furigana != null">
       AND furigana LIKE CONCAT('%', #{furigana}, '%')
     </if>
-    <if test="mailAddress != null and mailAddress != ''">
+    <if test="mailAddress != null">
       AND mail_address LIKE CONCAT('%', #{mailAddress}, '%')
     </if>
   </select>
+
   <!--指定生徒IDに紐づく全コース情報を取得する。(複数の生徒向け)-->
   <select id="findStudentCoursesByStudentIds"
     resultType="lesson.project.studentsmanagement.project.data.StudentCourse">

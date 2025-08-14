@@ -1,6 +1,7 @@
 package lesson.project.studentsmanagement.project.repository;
 
 import java.util.List;
+import java.util.Map;
 import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
@@ -159,4 +160,6 @@ public interface StudentRepository {
    * @return
    */
   int logicalDeleteStudent(@Param("id") Long id);
+
+  List<Student> searchStudentsByConditions(Map<String, Object> params);
 }

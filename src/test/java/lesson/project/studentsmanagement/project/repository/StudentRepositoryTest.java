@@ -3,7 +3,10 @@ package lesson.project.studentsmanagement.project.repository;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import org.apache.ibatis.session.SqlSession;
@@ -90,6 +93,32 @@ class StudentRepositoryTest {
     assertThat(inserted).isEqualTo(course);
   }
 
+  @Test
+  void 申込状況が登録できることのテスト() {
+    // コースを登録
+    StudentCourse newCourse = new StudentCourse(null, // id (auto increment)
+        1L, // student_id (既存の生徒ID)
+        "Python",
+        LocalDateTime.of(2025, 8, 1, 10, 0),
+        LocalDateTime.of(2025, 10, 30, 18, 0)
+    );
+    sut.registerStudentCourse(newCourse);
+
+    // 登録後のコースIDを取得（Long に変換）
+    Long courseId = newCourse.getId() != null ? newCourse.getId().longValue() : null;
+    assertThat(courseId).isNotNull();
+
+    // 申込状況を登録
+    CourseStatus status = new CourseStatus(courseId, 2); // 2 = 本申込など
+    sut.registerCourseStatus(status);
+
+    // 検証
+    List<CourseStatus> statusList = sut.findCourseStatusByCourseId(String.valueOf(courseId));
+    assertThat(statusList).isNotEmpty();
+    assertThat(statusList.get(0).getAppStatus()).isEqualTo(2);
+  }
+
+
   // ----------- Read -----------
   @Test
   void 論理削除されていない受講生の全件検索ができることのテスト() {
@@ -148,6 +177,75 @@ class StudentRepositoryTest {
     assertThat(actual).contains(expected1, expected2);
   }
 
+  @Test
+  void 複数生徒IDでコース情報を取得できることのテスト() {
+    List<StudentCourse> courses = sut.findStudentCoursesByStudentIds(List.of("1", "3"));
+    List<Long> studentIds = courses.stream()
+        .map(StudentCourse::getStudentId)
+        .toList();
+
+    assertThat(studentIds).contains(1L, 3L);
+    assertThat(courses).isNotEmpty();
+  }
+
+  @Test
+  void 複数コースIDで申込状況を取得できることのテスト() {
+    List<Long> courseIds = List.of(1L, 4L, 6L);
+    List<CourseStatus> statusList = sut.findCourseStatusesByCourseIds(
+        courseIds.stream().map(String::valueOf).toList()
+    );
+
+    assertThat(statusList).hasSize(courseIds.size());
+
+    List<Long> fetchedCourseIds = statusList.stream()
+        .map(CourseStatus::getCourseId)
+        .toList();
+
+    assertThat(fetchedCourseIds).containsExactlyInAnyOrderElementsOf(courseIds);
+
+    statusList.forEach(status -> assertThat(status.getAppStatus()).isPositive());
+  }
+
+  @Test
+  void 条件検索で生徒を取得できることのテスト() {
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "Cabn");
+    params.put("furigana", null);
+    params.put("mailAddress", null);
+    params.put("deleted", 0); // H2では0/1
+    List<Student> actual = sut.searchStudentsByConditions(params);
+
+    assertThat(actual).isNotEmpty();
+
+    Student expected = new Student(
+        1L,
+        "Cabn",
+        "Carbn",
+        "C",
+        "cabn@example",
+        "everywhere",
+        20,
+        "male",
+        "cabnnoremark",
+        false
+    );
+
+    // リストに期待値が含まれることを確認
+    assertThat(actual).anyMatch(s -> s.equals(expected));
+  }
+
+  @Test
+  void 存在しない生徒IDで取得した場合はnullになることのテスト() {
+    Student s = sut.findStudentById("999");
+    assertThat(s).isNull();
+  }
+
+  @Test
+  void 存在しないコースIDで申込状況を取得すると空リストになることのテスト() {
+    List<CourseStatus> list = sut.findCourseStatusByCourseId("999");
+    assertThat(list).isEmpty();
+  }
+
   // ----------- Update -----------
 
   @Test
@@ -191,6 +289,22 @@ class StudentRepositoryTest {
     );
     // IDは比較に含めないようequals()を定義していればOK
     assertThat(actual).contains(expected);
+  }
+
+  @Test
+  void 申込状況が更新できることのテスト() {
+    // 既存コースID
+    Long courseId = 1L;
+    // 登録済みの申込状況を確認
+    List<CourseStatus> before = sut.findCourseStatusByCourseId(String.valueOf(courseId));
+    assertThat(before.get(0).getAppStatus()).isEqualTo(1);
+
+    // 更新
+    sut.updateCourseStatusById(before.get(0).getId(), 3); // 受講中に変更
+
+    // 検証
+    List<CourseStatus> after = sut.findCourseStatusByCourseId(String.valueOf(courseId));
+    assertThat(after.get(0).getAppStatus()).isEqualTo(3);
   }
 
   // ----------- Delete -----------
