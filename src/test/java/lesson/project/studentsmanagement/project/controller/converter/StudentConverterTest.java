@@ -19,6 +19,7 @@ class StudentConverterTest {
     converter = new StudentConverter();
   }
 
+  //data.sqlと干渉しないテストです
   @Test
   void 論理削除されていない生徒のみが変換されることのテスト() {
     // Arrange

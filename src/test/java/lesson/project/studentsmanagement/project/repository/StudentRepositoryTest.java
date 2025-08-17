@@ -29,6 +29,7 @@ class StudentRepositoryTest {
   @Autowired
   private StudentRepository sut;
 
+  //data.sqlと干渉するテストです
   // ----------- Create -----------
   @Test
   void 受講生が登録できることのテスト() {

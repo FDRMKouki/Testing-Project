@@ -13,6 +13,7 @@ import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
+import lesson.project.studentsmanagement.project.exception.StudentNotFoundException;
 import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -198,4 +199,75 @@ class StudentServiceTest {
 
     assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
   }
+
+  @Test
+  void 存在しない生徒IDを指定したときStudentNotFoundExceptionがスローされることのテスト() {
+    String nonExistentId = "999";
+    Mockito.when(repository.findStudentById(nonExistentId)).thenReturn(null);
+
+    assertThrows(StudentNotFoundException.class, () -> sut.getStudentDetailById(nonExistentId));
+  }
+
+  @Test
+  void 受講コースが空のときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(300L, "テスト太郎", "テスト", "てすと",
+        "test@example.com", "東京", 20, "男性", "", false);
+    StudentDetail detail = new StudentDetail(student, new ArrayList<>(), new ArrayList<>());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
+  }
+
+  @Test
+  void コース名が空文字のときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(301L, "テスト花子", "テスト", "てすと",
+        "hana@example.com", "大阪", 22, "女性", "", false);
+    StudentCourse invalidCourse = new StudentCourse(10L, 301L, "   ",
+        LocalDateTime.now(), LocalDateTime.now().plusMonths(6));
+    StudentDetail detail = new StudentDetail(student, List.of(invalidCourse), List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
+  }
+
+  @Test
+  void 受講コースがnullのときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(
+        400L, "コース無し", "テスト", "なし",
+        "none@example.com", "東京", 18, "男性", "", false
+    );
+    StudentDetail detail = new StudentDetail(student, null, List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.registerStudent(detail));
+  }
+
+
+  @Test
+  void 条件検索で一致する生徒がいないとき空リストが返ることのテスト() {
+    Mockito.when(repository.searchStudentsByConditions("存在しない", null, null))
+        .thenReturn(List.of());
+
+    List<StudentDetail> result = sut.searchStudents("存在しない", null, null);
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void 論理削除が呼び出されることのテスト() {
+    Student student = new Student(500L, "削除太郎", "テスト", "さくじょ",
+        "delete@example.com", "東京", 40, "男性", "", false);
+
+    sut.logicalDeleteStudent(student);
+
+    verify(repository, times(1)).logicalDeleteStudent(500L);
+  }
+
+  @Test
+  void 受講コースが空リストのときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(401L, "空太郎", "テスト", "から",
+        "empty@example.com", "東京", 20, "男性", "", false);
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.registerStudent(detail));
+  }
+  
+
 }
