@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
+import lesson.project.studentsmanagement.project.validation.CreateGroup;
 import lesson.project.studentsmanagement.project.validation.UpdateGroup;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Student {
 
   @EqualsAndHashCode.Include
   @NotBlank(message = "名前は空白にできません", groups = UpdateGroup.class)
+  @NotBlank(message = "名前は空白にできません", groups = CreateGroup.class)
   private String name;
 
   @EqualsAndHashCode.Include
@@ -64,6 +66,9 @@ public class Student {
   private List<StudentCourse> studentCourse;
 //Postmanにて、送るjsonはこれに合わせる必要がある
 
+  public Student() {
+    // デフォルトコンストラクタ（Spring MVCのバインディング用）
+  }
 
   public Student(Long id, String name, String furigana, String nickname,
       String mailAddress, String region, int age,

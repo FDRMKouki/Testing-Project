@@ -18,3 +18,9 @@ id INT PRIMARY KEY AUTO_INCREMENT,
   start_datetime_at TIMESTAMP,
   predicted_complete_datetime_at TIMESTAMP
 );
+
+CREATE TABLE courses_status (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  course_id VARCHAR(36),
+  app_status VARCHAR(4)
+);

@@ -3,6 +3,7 @@ package lesson.project.studentsmanagement.project.controller.converter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
@@ -25,7 +26,7 @@ public class StudentConverter {
 
   //生徒詳細変換メゾット(コンバーター)
   public List<StudentDetail> convertStudentDetails(List<Student> studentList,
-      List<StudentCourse> studentCourseList) {
+      List<StudentCourse> studentCourseList, List<CourseStatus> courseStatusList) {
 
     //StudentDetail型の生徒詳細リスト作成
     List<StudentDetail> studentDetails = new ArrayList<>();
@@ -43,10 +44,18 @@ public class StudentConverter {
         List<StudentCourse> convertStudentCourseList = studentCourseList.stream()
             .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
             .collect(Collectors.toList());
+        //CourseStatus型の変換用リスト作成。ここにIDが一致するコース情報を全て入れる
+        //streamAPIを使ってstudentCourseのIDがcourseStatusのcourseIDと一致するコース情報を変換用リストに追加
+        List<CourseStatus> convertCourseStatusList = courseStatusList.stream()
+            .filter(courseStatus -> convertStudentCourseList.stream()
+                .anyMatch(studentCourse -> courseStatus.getCourseId()
+                    .equals(studentCourse.getId())))
+            .collect(Collectors.toList());
 
         //全コース追加完了 studentDetailに変換用リスト内のコース情報を入れる
         studentDetail.setStudentCourseList(convertStudentCourseList);
-        //詳細リストに全てのstudentDetail(student✓,studentCourses✓)を入れる。これである1つの生徒詳細完成
+        studentDetail.setCourseStatusList(convertCourseStatusList);
+        //詳細リストに全てのstudentDetail(student✓,studentCourse✓,courseStatus✓)を入れる。これである1つの生徒詳細完成
         studentDetails.add(studentDetail);
       }
 

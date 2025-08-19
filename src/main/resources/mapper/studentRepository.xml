@@ -21,6 +21,12 @@
     #{studentId}, #{courseName}, #{startDatetimeAt}, #{predictedCompleteDatetimeAt}
     )
   </insert>
+  <!--コース申込状況を登録する（IDは自動採番）。-->
+  <insert id="registerCourseStatus" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO courses_status (course_id, app_status)
+    VALUES (#{courseId}, #{appStatus})
+  </insert>
+
   <!--Read-->
   <!--論理削除されていない全生徒を取得する。-->
   <select id="searchStudent" resultType="lesson.project.studentsmanagement.project.data.Student">
@@ -30,15 +36,60 @@
   <select id="searchStudentCourseList" resultMap="StudentCourseResultMap">
     SELECT * FROM students_courses
   </select>
+  <!--全ての申込状況を取得する。-->
+  <select id="searchCourseStatusList" resultMap="CourseStatusResultMap">
+    SELECT * FROM courses_status
+  </select>
   <!--指定IDの生徒を取得する。-->
-  <select id="findStudentById" resultType="lesson.project.studentsmanagement.project.data.Student">
+  <select id="findStudentById" resultMap="StudentResultMap">
     SELECT * FROM students WHERE id = #{id}
   </select>
-  <!--指定生徒IDに紐づく全コース情報を取得する。-->
-  <select id="searchStudentCourse"
+  <!--指定生徒IDに紐づく全コース情報を取得する。(単一の生徒向け)-->
+  <select id="findStudentCourseByStudentId"
     resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
+  <!--指定コースIDに紐づく申込状況を取得する。(単一の生徒向け)-->
+  <select id="findCourseStatusByCourseId"
+    resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
+    SELECT * FROM courses_status WHERE course_id = #{courseId}
+  </select>
+  <!--指定条件と部分的に一致する生徒の詳細を取得する。-->
+  <select id="searchStudentsByConditions"
+    resultType="lesson.project.studentsmanagement.project.data.Student">
+    SELECT *
+    FROM students
+    WHERE is_deleted = 0
+    <if test="name != null">
+      AND name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    <if test="furigana != null">
+      AND furigana LIKE CONCAT('%', #{furigana}, '%')
+    </if>
+    <if test="mailAddress != null">
+      AND mail_address LIKE CONCAT('%', #{mailAddress}, '%')
+    </if>
+  </select>
+
+  <!--指定生徒IDに紐づく全コース情報を取得する。(複数の生徒向け)-->
+  <select id="findStudentCoursesByStudentIds"
+    resultType="lesson.project.studentsmanagement.project.data.StudentCourse">
+    SELECT * FROM students_courses
+    WHERE student_id IN
+    <foreach collection="studentIds" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+  <!--指定コースIDに紐づく申込状況を取得する。(複数の生徒向け)-->
+  <select id="findCourseStatusesByCourseIds"
+    resultType="lesson.project.studentsmanagement.project.data.CourseStatus">
+    SELECT * FROM courses_status
+    WHERE course_id IN
+    <foreach collection="courseIds" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+
   <!--Update-->
   <!--生徒情報を更新する。-->
   <update id="updateStudent">
@@ -60,11 +111,39 @@
     course_name = #{courseName}
     WHERE id = #{id}
   </update>
+  <!--コース申込状況の更新。 状況のみ更新する。-->
+  <update id="updateCourseStatus">
+    UPDATE courses_status
+    SET app_status = #{appStatus}
+    WHERE course_id = #{courseId}
+  </update>
+
+  <!--指定IDのコース申込状況の更新。 状況のみ更新する。-->
+  <update id="updateCourseStatusById">
+    UPDATE courses_status
+    SET app_status = #{appStatus}
+    WHERE id = #{id}
+  </update>
+
   <!--Delete-->
   <!--指定IDの生徒を論理削除する（is_deleted = 1）。-->
-  <update id="logicalDeleteStudent">
+  <update id="logicalDeleteStudent" flushCache="true">
     UPDATE students SET is_deleted = 1 WHERE id = #{id}
   </update>
+
+  <!--resultMap系-->
+  <resultMap id="StudentResultMap" type="lesson.project.studentsmanagement.project.data.Student">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="furigana" column="furigana"/>
+    <result property="nickname" column="nickname"/>
+    <result property="mailAddress" column="mail_address"/>
+    <result property="region" column="region"/>
+    <result property="age" column="age"/>
+    <result property="gender" column="gender"/>
+    <result property="remark" column="remark"/>
+    <result property="deleted" column="is_deleted"/>
+  </resultMap>
   <resultMap id="StudentCourseResultMap"
     type="lesson.project.studentsmanagement.project.data.StudentCourse">
     <id property="id" column="id"/>
@@ -72,6 +151,12 @@
     <result property="courseName" column="course_name"/>
     <result property="startDatetimeAt" column="start_datetime_at"/>
     <result property="predictedCompleteDatetimeAt" column="predicted_complete_datetime_at"/>
+  </resultMap>
+  <resultMap id="CourseStatusResultMap"
+    type="lesson.project.studentsmanagement.project.data.CourseStatus">
+    <id property="id" column="id"/>
+    <result property="courseId" column="course_id"/>
+    <result property="appStatus" column="app_status"/>
   </resultMap>
 
 </mapper>

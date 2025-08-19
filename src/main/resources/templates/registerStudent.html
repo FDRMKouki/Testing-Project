@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>生徒登録</title>
+</head>
+<body>
+<h1>新規生徒登録</h1>
+
+<form th:action="@{/registerStudentPage}" th:object="${studentDetail}" method="post">
+  <table border="1">
+    <tr>
+      <th>名前</th>
+      <td><input type="text" th:field="*{student.name}"/>
+        <div th:if="${#fields.hasErrors('student.name')}" th:errors="*{student.name}"
+             class="text-danger"></div>
+      </td>
+    </tr>
+    <tr>
+      <th>カナ名</th>
+      <td><input type="text" th:field="*{student.furigana}"/></td>
+    </tr>
+    <tr>
+      <th>ニックネーム</th>
+      <td><input type="text" th:field="*{student.nickname}"/></td>
+    </tr>
+    <tr>
+      <th>メールアドレス</th>
+      <td><input type="email" th:field="*{student.mailAddress}"/></td>
+    </tr>
+    <tr>
+      <th>地域</th>
+      <td><input type="text" th:field="*{student.region}"/></td>
+    </tr>
+    <tr>
+      <th>年齢</th>
+      <td><input type="number" th:field="*{student.age}"/></td>
+    </tr>
+    <tr>
+      <th>性別</th>
+      <td><input type="text" th:field="*{student.gender}"/></td>
+    </tr>
+    <tr>
+      <th>備考</th>
+      <td><textarea th:field="*{student.remark}"></textarea></td>
+    </tr>
+  </table>
+  <!-- コース名入力欄 -->
+  <div id="courses-container">
+    <h3>受講コース名</h3>
+    <div th:each="course, stat : *{studentCourseList}" class="course-entry">
+      <label th:for="'studentCourseList_' + ${stat.index} + '_courseName'">
+        コース名 [[${stat.index + 1}]]:
+      </label>
+      <input type="text"
+             th:id="'studentCourseList_' + ${stat.index} + '_courseName'"
+             th:name="'studentCourseList[' + ${stat.index} + '].courseName'"
+             th:value="*{studentCourseList[__${stat.index}__].courseName}"/>
+
+      <!-- 削除ボタン -->
+      <button type="button" onclick="removeCourse(this)">削除</button>
+      <br/>
+    </div>
+  </div>
+
+  <!-- 追加ボタン -->
+  <button type="button" onclick="addCourse()">＋コース追加</button>
+
+  <button type="submit">登録</button>
+</form>
+
+<p><a href="/studentListPage">← 一覧に戻る</a></p>
+
+</body>
+<!-- ここだけJavaScript。コース追加ボタンやコース削除ボタンが押されたときの処理 -->
+<script>
+  function addCourse() {
+    const container = document.getElementById('courses-container');
+    const index = container.querySelectorAll('.course-entry').length;
+
+    const div = document.createElement('div');
+    div.className = 'course-entry';
+    div.innerHTML = `
+      <label for="studentCourseList_${index}_courseName">コース名 ${index + 1}:</label>
+      <input type="text" id="studentCourseList_${index}_courseName"
+             name="studentCourseList[${index}].courseName"/>
+      <button type="button" onclick="removeCourse(this)">削除</button>
+      <br/>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeCourse(button) {
+    const container = document.getElementById('courses-container');
+    const entries = container.querySelectorAll('.course-entry');
+
+    if (entries.length <= 1) {
+      alert("少なくとも1つのコースが必要です。");
+      return;
+    }
+
+    const entry = button.closest('.course-entry');
+    entry.remove();
+    resetCourseFieldNames();
+  }
+
+    function resetCourseFieldNames() {
+      const entries = document.querySelectorAll('.course-entry');
+      entries.forEach((entry, i) => {
+        const label = entry.querySelector('label');
+        const input = entry.querySelector('input');
+        const id = `studentCourseList_${i}_courseName`;
+        const name = `studentCourseList[${i}].courseName`;
+
+        label.setAttribute('for', id);
+        label.textContent = `コース名 ${i + 1}:`;
+        input.setAttribute('id', id);
+        input.setAttribute('name', name);
+      });
+    }
+</script>
+</html>

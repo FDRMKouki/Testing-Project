@@ -1,7 +1,9 @@
 package lesson.project.studentsmanagement.project.data;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import lesson.project.studentsmanagement.project.validation.CreateGroup;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,7 @@ public class StudentCourse {
   private Long studentId; // ← String → Long に変更
 
   @EqualsAndHashCode.Include
+  @NotBlank(message = "コース名は必須です", groups = CreateGroup.class)
   private String courseName;
 
   @EqualsAndHashCode.Include
@@ -28,8 +31,12 @@ public class StudentCourse {
   @EqualsAndHashCode.Include
   private LocalDateTime predictedCompleteDatetimeAt;
 
-  public StudentCourse(Long studentId, String courseName, LocalDateTime startDatetimeAt,
+  //こいつはhtml表示用
+  private String appStatus;
+
+  public StudentCourse(Long id, Long studentId, String courseName, LocalDateTime startDatetimeAt,
       LocalDateTime predictedCompleteDatetimeAt) {
+    this.id = id;
     this.studentId = studentId;
     this.courseName = courseName;
     this.startDatetimeAt = startDatetimeAt;

@@ -3,6 +3,7 @@ package lesson.project.studentsmanagement.project.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class StudentDetail {
   private Student student;
   @Valid
   private List<StudentCourse> studentCourseList;
+  @Valid
+  private List<CourseStatus> courseStatusList;
 
 
 }

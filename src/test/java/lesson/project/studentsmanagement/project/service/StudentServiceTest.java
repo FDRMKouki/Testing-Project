@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
+import lesson.project.studentsmanagement.project.exception.StudentNotFoundException;
 import lesson.project.studentsmanagement.project.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,44 +41,61 @@ class StudentServiceTest {
   void 受講生詳細一覧検索_リポジトリとコンバーターの処理が適切に呼び出されていることのテスト() {
     List<Student> studentList = new ArrayList<>();
     List<StudentCourse> studentCourseList = new ArrayList<>();
+    List<CourseStatus> courseStatusList = new ArrayList<>();
     Mockito.when(repository.searchStudent()).thenReturn(studentList);
     Mockito.when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    Mockito.when(repository.searchCourseStatusList()).thenReturn(courseStatusList);
 
     sut.searchStudentList();
 
     verify(repository, times(1)).searchStudent();
     verify(repository, times(1)).searchStudentCourseList();
-    verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList);
+    verify(repository, times(1)).searchCourseStatusList();
+    verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList,
+        courseStatusList);
   }
 
   @Test
   void 受講生詳細検索_リポジトリの処理が適切に呼び出されていることのテスト() {
-    String id = "123";//対象の生徒のID
+    // 準備：テストで使うIDとモック返却データ
+    String studentId = "123";
 
     Student student = new Student(
-        123L, "検索太郎", "ケンサクタロウ", "けんたろ",
-        "kensaku@example.com", "東京", 22, "男性", "備考", false
+        123L, "TestName", "テストネーム", "テスト",
+        "test@example.com", "東京", 30, "男性", "備考", false
     );
 
     StudentCourse course = new StudentCourse(
-        123L, "Java",
-        LocalDateTime.of(2025, 7, 1, 10, 0),
-        LocalDateTime.of(2025, 9, 1, 18, 0)
+        1L, 123L, "Java",
+        LocalDateTime.of(2025, 1, 1, 10, 0),
+        LocalDateTime.of(2025, 3, 31, 18, 0)
     );
 
-    List<StudentCourse> courseList = List.of(course);
+    CourseStatus status = new CourseStatus(1L, 2); // 申込状況「2」
 
-    Mockito.when(repository.findStudentById(id)).thenReturn(student);
-    Mockito.when(repository.searchStudentCourse(id)).thenReturn(courseList);
+    // モックの振る舞いを定義
+    Mockito.when(repository.findStudentById(studentId)).thenReturn(student);
+    Mockito.when(repository.findStudentCourseByStudentId(studentId)).thenReturn(List.of(course));
+    Mockito.when(repository.findCourseStatusesByCourseIds(List.of(String.valueOf(1L))))
+        .thenReturn(List.of(status));
 
-    StudentDetail result = sut.getStudentDetailById(id);
+    // 実行：対象メソッド呼び出し
+    StudentDetail result = sut.getStudentDetailById(studentId);
 
-    verify(repository, times(1)).findStudentById(id);
-    verify(repository, times(1)).searchStudentCourse(id);
+    // 検証：モックの呼び出しが期待通りか
+    Mockito.verify(repository).findStudentById(studentId);
+    Mockito.verify(repository).findStudentCourseByStudentId(studentId);
+    Mockito.verify(repository).findCourseStatusesByCourseIds(List.of(String.valueOf(1L)));
 
+    // 結果の検証
     assertThat(result.getStudent()).isEqualTo(student);
-    assertThat(result.getStudentCourseList()).isEqualTo(courseList);
+    assertThat(result.getStudentCourseList()).hasSize(1);
+    assertThat(result.getStudentCourseList().get(0)).isEqualTo(course);
+    assertThat(result.getStudentCourseList().get(0).getAppStatus()).isEqualTo("2");
+    assertThat(result.getCourseStatusList().get(0).getAppStatus()).isEqualTo(2);
+
   }
+
 
   @Test
   void 受講生登録_リポジトリの処理が適切に呼び出されていることのテスト() {
@@ -87,17 +106,20 @@ class StudentServiceTest {
 
     LocalDateTime now = LocalDateTime.now();
 
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(100L,
         100L, "Java", now, now.plusYears(1)
     );
+    CourseStatus status = new CourseStatus(100L, 1);
 
     List<StudentCourse> courseList = List.of(course);
-    StudentDetail detail = new StudentDetail(student, courseList);
+    List<CourseStatus> statusList = List.of(status);
+    StudentDetail detail = new StudentDetail(student, courseList, statusList);
 
     StudentDetail result = sut.registerStudent(detail);
 
     verify(repository, times(1)).registerStudent(student);
     verify(repository, times(1)).registerStudentCourse(Mockito.any(StudentCourse.class));
+    verify(repository, times(1)).registerCourseStatus(Mockito.any(CourseStatus.class));
 
     assertThat(result).isEqualTo(detail);
     assertThat(course.getStartDatetimeAt().getHour()).isEqualTo(LocalDateTime.now().getHour());
@@ -112,13 +134,14 @@ class StudentServiceTest {
         "change@example.com", "大阪", 30, "男性", "更新メモ", false
     );
 
-    StudentCourse course = new StudentCourse(
+    StudentCourse course = new StudentCourse(1L,
         200L, "変更後Java",
         LocalDateTime.of(2025, 8, 1, 9, 0),
         LocalDateTime.of(2025, 10, 31, 18, 0)
     );
+    CourseStatus status = new CourseStatus(1L, 1);
 
-    StudentDetail detail = new StudentDetail(student, List.of(course));
+    StudentDetail detail = new StudentDetail(student, List.of(course), List.of(status));
 
     sut.updateStudent(detail);
 
@@ -127,13 +150,124 @@ class StudentServiceTest {
   }
 
   @Test
+  void 条件検索時_申込状況が正しく取得されていることのテスト() {
+    Student student = new Student(
+        101L, "条件検索", "ジョウケンケンサク", "じょけん",
+        "search@example.com", "関西", 28, "女性", "備考", false
+    );
+
+    StudentCourse course = new StudentCourse(8L,
+        201L, "Python",
+        LocalDateTime.of(2025, 6, 1, 10, 0),
+        LocalDateTime.of(2025, 9, 1, 18, 0)
+    );
+    course.setStudentId(101L);
+
+    CourseStatus status = new CourseStatus(8L, 2); // 本申込(2)
+
+    Mockito.when(repository.searchStudentsByConditions("条件", null, null))
+        .thenReturn(List.of(student));
+    Mockito.when(repository.findStudentCoursesByStudentIds(List.of("101")))
+        .thenReturn(List.of(course));
+    Mockito.when(repository.findCourseStatusesByCourseIds(List.of(course.getId().toString()))
+    ).thenReturn(List.of(status));
+
+    Mockito.when(converter.convertStudentDetails(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenCallRealMethod();
+
+    List<StudentDetail> results = sut.searchStudents("条件", null, null);
+
+    verify(repository).searchStudentsByConditions("条件", null, null);
+    verify(repository).findStudentCoursesByStudentIds(List.of("101"));
+    verify(repository).findCourseStatusesByCourseIds(List.of("8"));
+
+    assertThat(results).hasSize(1);
+    StudentDetail detail = results.get(0);
+    assertThat(detail.getStudent().getName()).isEqualTo("条件検索");
+    assertThat(detail.getStudentCourseList()).hasSize(1);
+    assertThat(detail.getStudentCourseList().get(0).getAppStatus()).isEqualTo("2");
+
+  }
+
+  @Test
   void 生徒IDがnullのときIllegalArgumentExceptionがスローされることのテスト() {
     Student student = new Student(
         null, "名無し", "ナナシ", "ななし",
         "none@example.com", "不明", 0, "不明", "エラー用", false
     ); // ID未設定(ID=null)
-    StudentDetail detail = new StudentDetail(student, List.of());
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
 
     assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
   }
+
+  @Test
+  void 存在しない生徒IDを指定したときStudentNotFoundExceptionがスローされることのテスト() {
+    String nonExistentId = "999";
+    Mockito.when(repository.findStudentById(nonExistentId)).thenReturn(null);
+
+    assertThrows(StudentNotFoundException.class, () -> sut.getStudentDetailById(nonExistentId));
+  }
+
+  @Test
+  void 受講コースが空のときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(300L, "テスト太郎", "テスト", "てすと",
+        "test@example.com", "東京", 20, "男性", "", false);
+    StudentDetail detail = new StudentDetail(student, new ArrayList<>(), new ArrayList<>());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
+  }
+
+  @Test
+  void コース名が空文字のときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(301L, "テスト花子", "テスト", "てすと",
+        "hana@example.com", "大阪", 22, "女性", "", false);
+    StudentCourse invalidCourse = new StudentCourse(10L, 301L, "   ",
+        LocalDateTime.now(), LocalDateTime.now().plusMonths(6));
+    StudentDetail detail = new StudentDetail(student, List.of(invalidCourse), List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.updateStudent(detail));
+  }
+
+  @Test
+  void 受講コースがnullのときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(
+        400L, "コース無し", "テスト", "なし",
+        "none@example.com", "東京", 18, "男性", "", false
+    );
+    StudentDetail detail = new StudentDetail(student, null, List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.registerStudent(detail));
+  }
+
+
+  @Test
+  void 条件検索で一致する生徒がいないとき空リストが返ることのテスト() {
+    Mockito.when(repository.searchStudentsByConditions("存在しない", null, null))
+        .thenReturn(List.of());
+
+    List<StudentDetail> result = sut.searchStudents("存在しない", null, null);
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void 論理削除が呼び出されることのテスト() {
+    Student student = new Student(500L, "削除太郎", "テスト", "さくじょ",
+        "delete@example.com", "東京", 40, "男性", "", false);
+
+    sut.logicalDeleteStudent(student);
+
+    verify(repository, times(1)).logicalDeleteStudent(500L);
+  }
+
+  @Test
+  void 受講コースが空リストのときIllegalArgumentExceptionがスローされることのテスト() {
+    Student student = new Student(401L, "空太郎", "テスト", "から",
+        "empty@example.com", "東京", 20, "男性", "", false);
+    StudentDetail detail = new StudentDetail(student, List.of(), List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> sut.registerStudent(detail));
+  }
+  
+
 }

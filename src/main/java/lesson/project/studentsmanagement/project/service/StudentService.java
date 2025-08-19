@@ -2,8 +2,10 @@ package lesson.project.studentsmanagement.project.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lesson.project.studentsmanagement.project.controller.converter.StudentConverter;
+import lesson.project.studentsmanagement.project.data.CourseStatus;
 import lesson.project.studentsmanagement.project.data.Student;
 import lesson.project.studentsmanagement.project.data.StudentCourse;
 import lesson.project.studentsmanagement.project.domain.StudentDetail;
@@ -42,14 +44,24 @@ public class StudentService {
     repository.registerStudent(student);  // IDがセットされる
 
     List<StudentCourse> courses = filterValidCourses(studentDetail.getStudentCourseList());
+    validateCourses(courses);
 
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime oneYearLater = now.plusYears(1);
 
     for (StudentCourse course : courses) {
       initStudentsCourse(course, student, now, oneYearLater);
-      repository.registerStudentCourse(course);
+      repository.registerStudentCourse(course); // ここでIDがセットされる
     }
+
+    // ここで courseStatus 登録
+    for (StudentCourse course : courses) {  // 元は studentDetail.getStudentCourseList() だが、ID反映のため coursesを使う
+      CourseStatus status = new CourseStatus(course.getId(), 1);
+      repository.registerCourseStatus(status);
+    }
+
+    // ここで ID がセットされた courses を studentDetail に反映する
+    studentDetail.setStudentCourseList(courses);
 
     return studentDetail;
   }
@@ -88,7 +100,8 @@ public class StudentService {
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchStudent();
     List<StudentCourse> studentCoursesList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studentList, studentCoursesList);
+    List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
+    return converter.convertStudentDetails(studentList, studentCoursesList, courseStatusList);
   }
 
   /**
@@ -102,14 +115,86 @@ public class StudentService {
     if (student == null) {
       throw new StudentNotFoundException("生徒ID " + id + " は存在しません。");
     }
-    List<StudentCourse> courses = repository.searchStudentCourse(id);
-    return new StudentDetail(student, courses);
+    List<StudentCourse> courses = repository.findStudentCourseByStudentId(id);
+
+    // コースIDリストを作成
+    List<Long> courseIds = courses.stream()
+        .map(StudentCourse::getId)
+        .collect(Collectors.toList());
+
+    // コースIDに対応する申込状況を一括取得
+    List<CourseStatus> courseStatuses = repository.findCourseStatusesByCourseIds(
+        courseIds.stream()
+            .map(String::valueOf)
+            .collect(Collectors.toList())
+    );
+
+    // CourseStatusをcourseIdをキーにMap化
+    Map<Long, Integer> courseStatusMap = courseStatuses.stream()
+        .collect(Collectors.toMap(
+            cs -> Long.valueOf(cs.getCourseId()),
+            CourseStatus::getAppStatus // Integer型をそのまま使う
+        ));
+
+    // StudentCourse に appStatus をセット
+    for (StudentCourse course : courses) {
+      Integer statusInt = courseStatusMap.get(course.getId());
+      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "1"); // デフォルト仮申込
+    }
+    // 空リストを設定（StudentCourseのnull防止）
+    if (courses == null) {
+      courses = List.of();
+    }
+
+    return new StudentDetail(student, courses, courseStatuses);
+  }
+
+
+  /**
+   * 条件で生徒を検索（名前・ふりがな・メールアドレスの部分一致）。
+   *
+   * @param name        名前の一部（null可）
+   * @param furigana    フリガナの一部（null可）
+   * @param mailAddress メールアドレスの一部（null可）
+   * @return 検索結果の生徒詳細リスト
+   */
+  public List<StudentDetail> searchStudents(String name, String furigana, String mailAddress) {
+    List<Student> students = repository.searchStudentsByConditions(name, furigana, mailAddress);
+
+    if (students.isEmpty()) {
+      return List.of();
+    }
+
+    // IDリストを使ってコースと申込状況を一括取得
+    List<String> studentIds = students.stream()
+        .map(s -> s.getId().toString())
+        .collect(Collectors.toList());
+
+    List<StudentCourse> courses = repository.findStudentCoursesByStudentIds(studentIds);
+    List<CourseStatus> statuses = repository.findCourseStatusesByCourseIds(
+        courses.stream().map(c -> c.getId().toString()).collect(Collectors.toList())
+    );
+
+    // CourseStatus を courseId をキーにMap化
+    Map<Long, Integer> courseStatusMap = statuses.stream()
+        .collect(Collectors.toMap(
+            cs -> Long.valueOf(cs.getCourseId()),
+            CourseStatus::getAppStatus
+        ));
+
+    // StudentCourse に appStatus をセット
+    for (StudentCourse course : courses) {
+      Integer statusInt = courseStatusMap.get(course.getId());
+      course.setAppStatus(statusInt != null ? String.valueOf(statusInt) : "1");
+    }
+
+    return converter.convertStudentDetails(students, courses, statuses);
   }
 
   // ----------- Update -----------
 
   /**
-   * 生徒とコース名を更新する。 生徒とコースの情報をそれぞれ更新
+   * 生徒とコース名を更新する。 生徒とコースの情報と申込状況をそれぞれ更新
    *
    * @param studentDetail 更新内容
    */
@@ -119,9 +204,19 @@ public class StudentService {
       throw new IllegalArgumentException("IDは必須です。");
     }
 
+    List<StudentCourse> courses = studentDetail.getStudentCourseList();
+    validateCourses(courses);
     repository.updateStudent(studentDetail.getStudent());
+
     studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+        .forEach(studentCourse -> {
+          repository.updateStudentCourse(studentCourse);
+
+          if (studentCourse.getId() != null && studentCourse.getAppStatus() != null) {
+            int statusInt = Integer.parseInt(studentCourse.getAppStatus());
+            repository.updateCourseStatus(studentCourse.getId().toString(), statusInt);
+          }
+        });
   }
 
   // ----------- Delete -----------
@@ -132,6 +227,20 @@ public class StudentService {
    * @param student 対象の生徒
    */
   public void logicalDeleteStudent(Student student) {
-    repository.logicalDeleteStudent(student);
+    repository.logicalDeleteStudent(student.getId());
   }
+
+
+  private void validateCourses(List<StudentCourse> courses) {
+    if (courses == null || courses.isEmpty()) {
+      throw new IllegalArgumentException("少なくとも1つのコース情報が必要です。");
+    }
+
+    for (StudentCourse course : courses) {
+      if (course.getCourseName() == null || course.getCourseName().trim().isEmpty()) {
+        throw new IllegalArgumentException("コース名は空にできません。");
+      }
+    }
+  }
+
 }
